@@ -1,0 +1,33 @@
+Steps for setup Ubuntu Server 24.04 in VM after installed
+======================================================================
+login as a root using sudo
+$sudo   su
+#passwd   root
+-----------------------------------------------
+update packages
+#apt-get update  -y
+------------------------------------------------
+install package for ssh and ifconfig
+#apt-get   install   net-tools   ssh   -y
+------------------------------------------------
+start & enable ssh service
+#systemctl	start 	ssh
+#systemctl	enable  ssh
+#systemctl	status  ssh
+---------------------------------------------------
+set timezone
+#timedatectl	set-timezone	Asia/Kolkata
+---------------------------------------------------
+update ssh configuration file
+#vim	/etc/ssh/sshd_config
+
+PermitRootLogin	 yes			[ Line number 33 ]
+PasswordAuthentication	yes		[ Line number 57 ]
+#KbdInteractiveAuthentication no		[ Line number 63 ]
+:wq
+--------------------------------------------------------
+restart ssh service
+#systemctl	restart	     ssh
+
+--------------------------------------------------------
+Open putty access ubuntu via itadmin or root

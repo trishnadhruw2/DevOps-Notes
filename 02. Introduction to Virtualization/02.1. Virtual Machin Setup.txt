@@ -1,0 +1,16 @@
+===========================================================================
+Virtualization Tool - 
+Oracle Virtual Box v6 
+https://www.virtualbox.org/wiki/Download_Old_Builds_6_1
+===========================================================================
+Require OS Virtualization -
+-
+Amazon Linux 2
+https://cdn.amazonlinux.com/os-images/2.0.20240503.0/virtualbox/
+---------------------------------------------------------------------
+Ubuntu
+https://ubuntu.com/download/server
+1. Download 24.04 LTS
+
+=============================================================================
+
