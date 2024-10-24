@@ -1,0 +1,69 @@
+
+check git installed or not
+#rpm   -q  git
+or
+#yum  info  git
+-------------------------------------------------------------
+for install git
+#yum  update   -y
+#yum  install  git
+-------------------------------------------------------------
+for check version
+#git  -v
+--------------------------------------------------------------
+create directory for project
+#mkdir  /devpro
+#cd  /devpro
+--------------------------------------------------------------
+convert normal directory into git repository
+#git   init
+--------------------------------------------------------------
+Create user and email for git operation
+
+#git config --global user.name sara
+#git config --global user.email sara@gmail.com
+--------------------------------------------------------------
+For Verify user details
+#git config --list
+--------------------------------------------------------------
+create file for project
+#vim  mycode1.html
+this is my first code
+:wq
+--------------------------------------------------------------
+for show git status
+#git  status
+--------------------------------------------------------------
+for add file working to staging area
+#git   add   mycode1.html
+--------------------------------------------------------------
+for add all files present in working area to staging area
+#git   add   .
+#git   status
+--------------------------------------------------------------
+for unstage file
+#git    rm   --cached   mycode1.html
+--------------------------------------------------------------
+after add into staging, commit file ( to add into local repo )
+
+#git   commit   -m   "my first code"   mycode1.html
+--------------------------------------------------------------
+to commit all staging area files
+#git   commit   -m   "my first code"   .
+--------------------------------------------------------------
+for show last commit info
+#git   show
+--------------------------------------------------------------
+for show commited files log
+#git   log
+--------------------------------------------------------------
+for show specific commit info
+#git   show   <commit id>
+--------------------------------------------------------------
+for restore (discard) changes in work area befor add staging
+#git   restore   mycode1.html
+---------------------------------------------------------------
+
+
+
+

@@ -1,0 +1,109 @@
+
+Day 4:
+
+#yum install git -y
+#mkdir  /punepro1
+#cd /punepro1
+#git int
+#git config --global user.name ajay
+#git config --global user.email ajay@gmail.com
+#git branch -m main
+#cd ..
+
+download website template (code)
+#wget https://www.free-css.com/assets/files/free-css-templates/download/page291/edu-meeting.zip
+#unzip  edu-meeting.zip
+# cp -rvf templatemo_569_edu_meeting/* /punepro1/
+#cd /punepro1
+#git add .
+#git  commit -m "update code" .
+---------------------------------------------------------------------------
+git tag:
+Tag operation allow to give meaningful names to a specific version in the repository
+
+show tags
+#git tag
+
+for add tag
+#git  tag  -a  importantcode   <commit-id>
+#git    tag
+
+show tag in details
+#git    show  importantcode
+
+delete tag
+#git    tag  -d  importantcode
+#git   tag
+
+show log in short
+#git log --oneline
+---------------------------------------------------------------------------------------------
+git ignore
+
+Git ignore is use to ignore some files while committing.
+Create one hidden file .gitignore and enter the file extension which we want to ignore.
+
+Eg.
+#vim .gitignore
+*.yml
+*.txt
+:wq
+
+#git   add   .gitignore
+#git   commit   -m “ignore the yml and txt files”   .
+
+create file for test purpose
+#touch  pune.txt   mumba.html
+
+#git  status
+-------------------------------------------------------------------------------------------------------------------
+Git Rebase
+Git rebase is a command that allows developers to integrate changes from one branch to another.
+
+#git   rebase   <branch name>
+-------------------------------------------------------------------------------------------------------------------
+git clone
+cloning is the act of making a copy of any target repository. 
+The target repository can be remote or local. 
+You can clone your repository from the remote repository to create a local copy on your system.
+
+#cd ..
+#git  clone  https://github.com/hackwithabhi1/webapp.git
+
+---------------------------------------------------------------------------------------------------------------------
+git fork
+we can copy of other developer project from github.com account and paste it on our github.com account. 
+after own copy means that we will be able to contribute changes to our copy of the repository without affecting the original repository. 
+
+fork vs clone.
+
+fork is process copy project github account to account
+and cloning is process copy github account to local
+
+-----------------------------------------------------------------------------------------------------------------
+open web browser and create central repo ( punepro1 )
+
+Dashboard- new repository - punepro1 - create.
+
+open terminal
+#cd  /punepro1
+#git remote add origin https://github.com/hackwithabhi1/punepro1.git
+#git push -u origin main
+----------------------------------------------------------------------------------------------------------------
+for pull code master branch ( default branch )
+
+#git remote add origin https://github.com/hackwithabhi1/punepro1.git
+#git pull  https://github.com/hackwithabhi1/punepro1.git
+
+for pull code pune ( sub branch )
+
+#git branch  pune
+#git checkout  pune
+#git  pull origin  pune
+
+if give warning
+git config pull.rebase false
+git config pull.rebase true
+git pull origin pune
+#ls
+

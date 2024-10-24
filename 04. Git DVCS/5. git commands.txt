@@ -1,0 +1,90 @@
+Branch
+This concept is usefullfor parallel development.
+You can create any no of branches, change are personal to that particular branch.
+File created in workspace will be visible in any of the branch workspace until you commit, once you commit, then that files belong to that particular branch.
+When created new branch, data of the existing branch is copied to new branch.
+--------------------------------------------------------------------
+for rename branch
+#git  branch  -m   main
+or
+#git  branch  -M   main
+--------------------------------------------------------------------
+show branch list
+#git  branch
+
+* indicat current working branch
+---------------------------------------------------------------------
+for create new branch ( branch1 )
+#git    branch     branch1
+#git    branch
+---------------------------------------------------------------------
+for change branch
+#git   checkout   branch1
+---------------------------------------------------------------------
+for merge branch
+#git   checkout   main
+#git   merge   branch1
+---------------------------------------------------------------------
+for delete branch
+#git   branch   -d    branch1
+---------------------------------------------------------------------
+git conflict
+When same file having different content in deferent branches, if you do merge, conflict occurs(Resolve conflict then add and commit).
+Conflict occurs when you merge branches
+To resolve conflict go to master branch edit manually.
+
+to resove conflict manualy edit conflict file and update as per requirement then use following command
+#git   add   .
+#git   commit
+
+give commit msg and save file.
+-------------------------------------------------------------------------------
+git stash
+The git stash command takes your modified tracked files and saves it on a pile of incomplete changes that you can reapply at any time. To go back to work, you can use the stash pop.
+The git stash command will help a developer switch branches to work on something else without committing to incomplete work.
+
+To transfer file in tash
+#git  tash
+
+Store current work with untracked files
+#git   stash list
+
+to transfer incomplete file from stash to working space
+#git  stash pop
+
+To clear the stash items
+#git   stash clear
+--------------------------------------------------------------------------------------------------------
+Git Reset:
+
+Git reset is a powerful command that is used to undo local changes to the state of a gitrepo
+
+To reset staging area (unstaged file)
+#git  reset <filename>
+
+To hard reset changes from both staging area and working directory at a time
+#git  reset   --hard
+------------------------------------------------------------------------------------------------------------
+git revert
+The revert command help you undo an existing commit.
+It does not delete any data in the process instead rather git create new commit with the included file reverted to their previous state or previous version.
+
+#git   revert   < commit id which are wrong commited >
+-------------------------------------------------------------------------------------------------------------
+git clean
+We can remove all untrack files (which not add into staging or not commited)
+
+it show what will be remove
+#git   clean -n 
+
+it remove untrack file
+#git  clean -f 
+#ls
+
+----------------------------------------------------------------------------------------------------------------
+git tag
+==================================================================================
+
+
+
+

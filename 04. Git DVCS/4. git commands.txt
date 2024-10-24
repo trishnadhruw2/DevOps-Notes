@@ -1,0 +1,106 @@
+
+Day 2:
+
+create account for central repository using following link (using web browser) -
+https://github.com/signup
+---------------------------------------------------------------------------------------------------------------
+after create account - Dashboard - new - create a new repository - repository name ( devpro1 ) - create repository.
+---------------------------------------------------------------------------------------------------------------
+Open developer system terminal 
+
+for show current branch
+#git  branch
+--------------------------------------------------------------------------------
+set main as a default branch
+#git branch -M main
+--------------------------------------------------------------------------------
+add central repo 
+#git remote add origin https://github.com/hackwithabhi1/devpro1.git
+---------------------------------------------------------------------------------------------------------------
+create git account token -
+login github - profile - settings - developer settings -  personal access tokens - tokens (classic) -  generate new token - generate new token (classic) - Note( devpro1) - Expiration (90) - select permissions - (Gernate token) - save generated token on safe location.
+
+---------------------------------------------------------------------------------------------------------------
+for push code into central repo ( use token as a username and password)
+# git push -u origin main
+or
+#git push https://ghp_8EfyC5gcui0pZb3e@github.com/hackwithabhi1/devpro1.git
+------------------------------------------------------------------------------------------------------------------
+goto central repo and refresh page.
+
+push code available in central repo.
+=================================================================================
+Create singapore developer system (new ec2 - amazon linux2/2023)
+
+#yum install git -y
+#git -v
+#mkdir /devpro1
+#cd /devpro1/
+#git init
+#git status
+#git branch -m main
+#git config --global user.name ricky
+#git config --global user.email ricky@gmail.com
+#git config --list
+
+for pull code from central repo
+#git pull https://github.com/hackwithabhi1/devpro1.git
+
+#ls
+#vim home.html
+#git status
+#git add .
+#git status
+#git commit -m 'first code for home' home.html
+#git status
+#git remote add origin https://github.com/hackwithabhi1/devpro1.git
+#git push -u origin main
+------------------------------------------------------------------------------------------------------------------
+goto central repo and refresh page.
+
+push code of singapore developer available in central repo.
+-------------------------------------------------------------------------------------------------------------------------------
+Open terminal on mumbai developer and pull code
+#git pull https://github.com/hackwithabhi1/devpro1.git
+#git  log
+--------------------------------------------------------------------------------------------------------------------------------
+Create pune developer system (windows server 2022)
+
+for Install git open broswer
+
+https://git-scm.com/download/win
+
+download following file
+64-bit Git for Windows Setup.
+
+after download double click next- next and finish.
+
+open git bash - 
+
+#mkdir  /devpro1
+#cd /devpro1/
+#git init
+#git status
+#git branch -m main
+#git config --global user.name sara
+#git config --global user.email sara@gmail.com
+#git config --list
+
+for pull code from central repo
+#git pull https://github.com/hackwithabhi1/devpro1.git
+
+#ls
+#vim home.html
+#git status
+#git add .
+#git status
+#git commit -m 'first code for home' home.html
+#git status
+#git remote add origin https://github.com/hackwithabhi1/devpro1.git
+#git push -u origin main
+
+==================================================================================
+
+
+
+
