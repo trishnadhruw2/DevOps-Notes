@@ -1,0 +1,54 @@
+Configure Apache webserver on Ubuntu Server 22/24.04
+=============================================================
+1.  set hostname
+$sudo  hostnamectl  set-hostname   ubuntu.example.com
+$hostname
+$sudo   su
+---------------------------------------------------------------------------------
+2. set time and date 
+#date
+#timedatectl   set-timezone  Asia/Kolkata
+---------------------------------------------------------------------------------
+3. update packages
+#apt-get  update  -y
+---------------------------------------------------------------------------------
+4. install packages
+#apt-get   install   nginx  wget  unzip   -y
+---------------------------------------------------------------------------------
+5. start and enable service
+#systemctl   start   nginx  
+#systemctl   enable  nginx  
+---------------------------------------------------------------------------------
+6. open browser and verify web page
+http://192.168.1.6
+---------------------------------------------------------------------------------
+7. Create custome webpage
+#cd   /var/www/html/
+#rm  -rvf  /var/www/html/*
+
+#vim   index.html
+<html>
+        <head>
+                <title>Pune</title>
+        </head>
+        <body bgcolor=yellow>
+                <h1>Welcome to Apache web server on ubuntu</h1>
+        </body>
+</html>
+:wq
+---------------------------------------------------------------------------------
+8. open browser and verify custome web page
+http://192.168.1.6
+---------------------------------------------------------------------------------
+9. remove custom web page and host website using free website template ( https://www.free-css.com/free-css-templates)
+
+#rm  -rvf  /var/www/html/*
+#cd
+#wget  https://www.free-css.com/assets/files/free-css-templates/download/page293/hexashop.zip
+#ls
+#unzip  hexashop.zip
+#cp -rvf templatemo_571_hexashop/*  /var/www/html/
+---------------------------------------------------------------------------------
+10. open browser and verify
+http://192.168.1.6
+---------------------------------------------------------------------------------

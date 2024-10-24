@@ -1,0 +1,33 @@
+Configure IIS (Internet Information Service) on Windows Server 2022
+==========================================
+1. Open Server Manager- Dashboard - Add role and Features - Next  - Next - Next - select "Web Server (IIS) - Add Features - Next - Next - Next - Next - Install - Close - close Server Manager
+-----------------------------------------------------------------------------------------------------
+2. Open Browser and verify
+http://192.168.1.7
+------------------------------------------------------------------------------------------------------
+3. Create custom web page
+
+open file explorer - c drive - inetpub - wwwroot - 
+remove existing files and crete index.html file
+
+<html>
+        <head>
+                <title>Pune</title>
+        </head>
+        <body bgcolor=yellow>
+                <h1>Welcome to Apache web server on ubuntu</h1>
+        </body>
+</html>
+
+save file
+-----------------------------------------------------------------------------------------------------
+4. Open Browser and verify
+http://192.168.1.7
+------------------------------------------------------------------------------------------------------
+5. download free website template (freecss.com) 
+
+extract downloaded file - copy all website contents into wwwroot directory.
+-----------------------------------------------------------------------------------------------------
+6. Open Browser and verify
+http://192.168.1.7
+------------------------------------------------------------------------------------------------------

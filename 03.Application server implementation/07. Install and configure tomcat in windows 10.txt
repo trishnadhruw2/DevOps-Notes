@@ -1,0 +1,60 @@
+Install Tomcat on windows Server:
+===================================================================
+Step 1: Install jdk-17_windows-x64_bin
+
+Run and install it
+go to C drive -programming files-java-jdk17 - select path and copy it.
+search 'edit system environment variables- environmental variable -  go to user variable- new - 
+variable name- JAVA_HOME
+Variable Value- paste the path here,
+
+Now go to  system variale - new
+
+variable name - JAVA_home
+Variable value - paste the same  here
+
+now go inside programfile - bin -copy the path.
+again go to "edit system environment variable-  path  - new - paste path.
+
+Now verify on command prompt-
+c:\user\name\echo %JAVA_HOME%
+
+O/P: C:\Progrmefiles\Java\jdk-16
+or
+java -version
+=====================================================================
+Step 2: apache-tomcat-9.0.62
+
+Download and install apache tomcat
+(https://tomcat.apache.org/download-90.cgi)
+
+username admin
+password 111
+
+set automatic startup for tomcat start every boot process
+
+open web-browser
+http://localhost:8080
+login admin
+pass  111
+==========================================================
+
+Step 3: for testing purpose download sample.war/jenkins.war
+
+after download Copy jenkins.war file and paste it 
+c:\programming files\Apache Software Foundation\Tomcat9.0\webapps\
+
+open web-browser
+http://localhost:8080
+http://127.0.0.1:8080
+
+login admin
+pass  111
+
+start jenkins
+
+http://localhost:8080/jenkins
+
+login in jenkins with respective password,without any plugins, set username=admin password=111
+
+========================================================================
