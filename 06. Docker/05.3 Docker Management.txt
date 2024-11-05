@@ -1,0 +1,156 @@
+for show docker is installed or not
+#docker    --version
+
+for install docker 
+#yum   update   -y
+#yum    install    docker   -y
+
+for show docker is installed or not
+#docker    --version
+
+For start docker service
+#systemctl   start  docker
+
+For permanent on docker
+#systemctl   enable docker
+
+For show docker service status
+#systemctl   status  docker
+
+For pull ubuntu image from docker hub
+#docker   pull   ubuntu
+#docker   pull   centos
+
+For show docker images
+#docker  images
+
+For start docker image into container
+#docker   run   -it   ubuntu    /bin/bash
+
+For check ubuntu version
+#cat   /etc/os-release
+#ls
+
+For exit container (stop)
+#exit
+
+For show running docker process
+#docker   ps
+
+For show runnning and stop docker process
+#docker   ps    -a
+
+if we want to login into existing container
+#docker   ps   -a
+#docker   start    indian_angel
+
+For go inside into docker
+#docker   attach   indian_angel
+#ls
+#exit
+
+For remove existing container (stop container)
+#docker   ps   -a
+#docker   rm    indian_angel
+#docker   ps   -a
+
+For remove  docker images
+#docker   images
+#docker   rmi    ubuntu
+
+For start container with customization name
+#docker   run  -it   --name=testcon   ubuntu   /bin/bash
+
+Create content inside the container
+#mkdir /aaa
+#mkdir /red
+#touch  /aaa/note{1..5}.txt
+#exit
+
+to check difference between ubuntu original image and new create testcon container image
+
+#docker    diff   testcon
+C /root
+A /root/.bash_history
+A /red
+A /aaa
+A /aaa/note4.txt
+A /aaa/note5.txt
+A /aaa/note1.txt
+A /aaa/note2.txt
+A /aaa/note3.txt
+
+Note:
+C: changes
+A: add (addition)
+========================================================================
+For create new self image of testcon container
+#docker   commit    <container-name>   <new-image-name>
+#docker   commit    testcon   testimage
+
+For create container from new created image
+#docker   run   -it   --name   testimagecon   testimage /bin/bash
+#ls  /aaa
+========================================================================
+For create container from Docker file
+
+1.  Create docker file
+#vim   Dockerfile
+
+FROM Ubuntu
+RUN echo  “welcome to docker”  >  /home/welcome.txt
+:wq
+
+2. To create image of dockerfile
+#docker    build   -t   myimage  .
+#docker   ps   -a
+#docker    images
+
+3. For start new created docker image
+#docker   run   -it   --name   myicon   myimage  /bin/bash
+#cd /home
+#cat   welcome.txt
+#exit
+
+now, create new Dockerfile(update existing)
+ vim Dockerfile
+#vim Dockerfile
+#ls
+#cat > testfile1
+#docker build -t myimage1 .
+#docker images
+#docker run -it --name myicon1 myimage1 /bin/bash
+#pwd
+#ls
+#exit
+
+
+
+
+
+
+
+
+
+
+
+
+ cat /etc/os-release
+ apt-get update -y
+ apt-get install wget unzip -y
+ wget https://www.free-css.com/assets/files/free-css-templates/download/page291/atlas.zip
+ unzip atlas.zip
+ cp -rvf Atlas/*  htdocs/
+
+
+
+
+
+
+
+
+
+
+
+
+

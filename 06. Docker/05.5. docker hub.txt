@@ -1,0 +1,149 @@
+Steps for set web server in container
+
+Step1:
+
+for show docker is installed or not
+#docker    --version
+
+for install docker 
+#yum   update   -y
+#yum    install    docker   -y
+
+for show docker is installed or not
+#docker    --version
+
+For start docker service
+#systemctl   start  docker
+
+For permanent on docker
+#systemctl   enable docker
+
+For show docker service status
+#systemctl   status  docker
+======================================================================
+Step2:
+For pull ubuntu image from docker hub
+#docker   pull   ubuntu
+#docker   pull   centos
+
+For show docker images
+#docker  images
+
+=====================================================================
+Step3: 
+
+Web hosting in container
+docker run -dt --name webcon -p 80:80 ubuntu
+#docker ps
+#docker ps -a
+#docker port webcon
+#docker exec -it webcon /bin/bash
+
+step4:
+
+Install apache in container
+
+root@cid#apt-get update
+root@cid#apt-get install apache2
+root@cid# service apache2 start
+root@cid# service apache2 status
+root@cid# apache2 -v
+root@cid# cd /var/www/html/
+root@cid# cat > index.html
+welcome to the mywebsite hosted in docker
+ctrl+d
+
+
+Install ansible in container
+root@cid# apt-get install ansible
+root@cid# ansible --version
+
+Install git in container
+root@cid# apt-get install git
+root@cid# git --version
+
+Create some file & directory inside the container
+root@cid# mkdir /mydata
+root@cid# touch /mydata/notes{1..10}.txt
+root@cid# exit
+
+step5:
+for access container website
+#curl http://172.17.0.1
+
+step6:
+for build image from running container
+#docker  ps
+#docker  ps  -a
+#docker  commit  mycon   myproimage
+#docker images
+
+step7:
+for run new create myproimage in container
+#docker  run   -it  --name   mypro   myproimage    /bin/bash
+root@cid# ls
+root@cid# git  --version
+root@cid# apache  -v
+root@cid# ansible   --version
+root@cid# ls  /mydata
+root@cid# exit
+
+step8:
+create docker hub account
+https://hub.docker.com
+select free account/verify emaild 
+
+step9:
+
+Now go to linux OS to push container image
+#docker   login
+username:  ********
+password:  ########
+
+after successfull login tag image
+
+docker tag local-image:tagname new-repo:tagname
+docker push new-repo:tagname
+
+#docker tag  webserver    hackwithabhi/project1 
+
+#docker   push   hackwithabhi/project1 
+
+""""
+docker tag firstimage YOUR_DOCKERHUB_NAME/firstimage
+and then you should be able to push it.
+
+docker push YOUR_DOCKERHUB_NAME/firstimage
+
+""""
+
+  
+after push process complete goto docker hub account refresh and check new image available there.
+
+Step10:
+Go to another linux of and install docker,pull  myworlwidepro/project1 image and run container
+#docker pull   myworlwidepro/project1
+#docker images
+#docker  run   -it  --name   myfrndpro   myworlwidepro/project1    /bin/bash
+root@cid# ls
+root@cid# git  --version
+root@cid# apache  -v
+root@cid# ansible   --version
+root@cid# ls  /mydata
+root@cid# exit
+
+
+
+
+
+
+
+
+Some important Commands
+
+	1. Stop all running containers : docker stop $ (docker ps -a -q)
+	2. Delete all stopped containers:   docker rm $(docker ps -a -q)
+	3. Delete all image:              docker rmi -f $(docker images -q)
+
+
+#

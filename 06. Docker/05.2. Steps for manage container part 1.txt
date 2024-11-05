@@ -1,0 +1,102 @@
+Steps for manage container with docker - 
+============================================
+
+check docker is installed or not
+#rpm  -q   docker
+--------------------------------------------
+install docker
+#yum  install  docker
+--------------------------------------------
+start and enable docker
+#systemctl  start   docker
+#systemctl  enable  docker
+#systemctl  status  docker
+--------------------------------------------
+check docker version
+#docker  -v
+#rpm  -q  docker
+--------------------------------------------
+show docker local images
+#docker  images
+--------------------------------------------
+show running container
+#docker  ps
+--------------------------------------------
+show running and stopped container
+#docker  ps  -a
+--------------------------------------------
+pull container image
+#docker pull ubuntu
+
+creat ubuntu container
+#docker  run  -dt  ubuntu
+
+-dt   detach terminal
+-it   interact terminal   ( provide /bin/bash mendatory)
+
+Note.
+If we run container in -dt mode, then container run but bydefault we are not interacted with container terminal.
+if we run container in -it mode, then container run and we are interact with container terminal, if container exit container stop here.
+
+-----------------------------------------------------
+go inside container ( start with -dt )
+#docker  exec  -it   <container_name/ID>    /bin/bash
+------------------------------------------------
+stop and kill container
+#docker  stop   <container_name/ID>
+#docker  kill   <container_name/ID>
+------------------------------------------------
+remove stop container
+#docker  rm  <container_name/ID>
+------------------------------------------------
+for start stopped container
+#docker  start   <container_name/ID>
+------------------------------------------------
+create container with custom name
+#docker  run  -dt  --name=con1   ubuntu
+------------------------------------------------
+create httpd container 
+
+#docker  run  -dt  --name=con2  -t  -p  81:80  httpd
+#docker ps
+
+Open web Browser and check default web page
+http://192.168.1.20:81
+
+go inside container and modify web page
+#docker  exec  -it   con2   /bin/bash
+	apache2> ls
+	apache2> cd htdocs
+	apache2> cat > index.html
+		<html>
+		<body bgcolor=yellow>
+		<H1>Welcome to my container first website</h1>
+		</body>
+		</html>
+	apache2> exit
+
+Open web Browser and refresh page
+http://192.168.1.20:81
+-------------------------------------------------------------------
+create container and host free webtemplate site
+
+#docker  run  -dt  --name=c1  -t  -p  84:80  httpd
+#docker  exec  -it   c1   /bin/bash
+	> cat /etc/os-release
+	> apt-get update -y
+	> apt-get install wget unzip -y
+	> wget https://www.free-css.com/assets/files/free-css-templates/download/page281/traveler.zip
+	> unzip  traveler.zip
+	>cp  -rvf free-travel-website-template/* htdocs/
+	>exit
+
+Open web Browser and refresh page
+http://192.168.1.20:84
+
+create image from above runing container
+#docker  commit  c1  travelerweb
+#docker  images
+-------------------------------------------------------------------
+
+
+

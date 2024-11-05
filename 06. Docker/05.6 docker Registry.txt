@@ -1,0 +1,88 @@
+Docker regitory:
+Docker Registry is a server-side application and part of Docker’s platform-as-a-service product. It allows you to locally store all your Docker images into one centralized location.
+
+When you set up a private registry, you assign a server to communicate with Docker Hub over the internet. The role of the server is to pull and push images, store them locally, and share them among other Docker hosts.
+
+By running an externally-accessible registry, you can save valuable resources and speed up processes. The software lets you pull images without having to connect to the Docker Hub, saving up bandwidth and securing the system from potential online threats.
+
+Docker hosts can access the local repository over a secure connection and copy images from the local registry to build their own containers.
+
+
+we can share our image with local registery insted of docker hub
+
+#docker images
+
+
+
+#docker run -d -p 5000:5000 --restart=always --name test_registry registry
+
+
+#docker pull ubuntu
+
+Tag image
+#docker tag ubuntu localhost:5000/my-ubuntu
+
+push image
+#docker push localhost:5000/my-ubuntu
+
+Remote the local images
+
+ #docker image remove ubuntu
+ #docker image remove localhost:5000/my-ubuntu
+
+Pull the localhost:5000/my-ubuntu image from your local registry.
+#docker pull localhost:5000/my-ubuntu
+
+
+Stop a local registry
+
+#docker container stop registry
+
+
+
+
+
+
+
+-----------------------------------------------------------
+we can share our image with local registery insted of docker hub
+
+#docker image ls
+#docker pull ubuntu
+#docker pull registry
+
+
+
+#docker run -d -p 5000:5000 --restart=always --name test_registry registry
+
+#docker ps
+#docker images
+#curl  http://127.0.0.1:5000/v2/_catalog
+#docker  inspect  test_registry
+
+#docker pull ubuntu
+
+Tag image
+#docker tag ubuntu localhost:5000/my-ubuntu
+
+push image
+#docker push localhost:5000/my-ubuntu
+
+Remove the local images
+
+ #docker image remove ubuntu
+ #docker image remove localhost:5000/my-ubuntu
+
+Pull the localhost:5000/my-ubuntu image from your local registry.
+#docker pull localhost:5000/my-ubuntu
+
+
+Stop a local registry
+
+#docker container stop registry
+==================================================================================================
+Reference
+https://docs.docker.com/registry/deploying/
+
+
+

@@ -1,0 +1,162 @@
+Docker Volume:
+=================================================
+for show docker is installed or not
+#docker    --version
+
+for install docker 
+#yum   update   -y
+#yum    install    docker   -y
+
+for show docker is installed or not
+#docker    --version
+
+For start docker service
+#systemctl   start  docker
+
+For permanent on docker
+#systemctl   enable docker
+
+For show docker service status
+#systemctl   status  docker
+
+For pull ubuntu image from docker hub
+#docker   pull   ubuntu
+#docker   pull   centos
+
+For show docker images
+#docker  images
+
+For volume
+step1: 
+For create docker file
+#vim   Dockerfile
+FROM ubuntu
+VOLUME ["/mydata"]
+:wq
+
+step2:
+For build docker image
+#docker  build  -t  myimage  .
+
+For show docker image
+#docker  images
+
+step3:
+create container from myimage
+#dcoker  run  -it   --name  con1   myimage   /bin/bash
+root@cid# ls
+root@cid# cd    /mydata
+root@cid# ls
+root@cid# touch   con1{a..e}.txt
+
+step4:
+For share volume (/mydata) with new container
+#docker  run  -it   --name  con2  --privileged=true    --volumes-from   con1    ubuntu   /bin/bash
+root@cid# ls
+root@cid# cd    /mydata
+root@cid# ls
+root@cid# touch   con2{a..e}.txt
+root@cid# ls
+root@cid# exit
+
+Step5:
+Start container con1 and verify con2 created data available or not
+#docker   ps   -a
+#docker   start   con1
+#docker    attach  con1
+root@cid# ls
+root@cid# cd /mydata
+root@cid# ls
+root@cid# exit
+
+step6:
+For share volume (/mydata) with new container con3
+#docker  run  -it   --name  con3 --privileged=true    --volumes-from   con2    ubuntu   /bin/bash
+root@cid# ls
+root@cid# cd    /mydata
+root@cid# ls
+root@cid# touch   con3{a..e}.txt
+root@cid# ls
+root@cid# exit
+
+Step7:
+Start container con1 to verify con3 created data available or not
+#docker   ps   -a
+#docker   start   con1
+#docker    attach  con1
+root@cid# ls
+root@cid# cd /mydata
+root@cid# ls
+root@cid# exit
+
+Map Volume Host OS to container
+Step1:
+#mkdir  pune
+#pwd
+#/root/pune
+
+Step2:
+Map pune volume with container
+#docker   run   -it   --name   mycon1   -v  /root/pune:/mypune   --privileged=true    ubuntu    /bin/bash
+root@cid# ls
+root@cid# cd  /mypune
+root@cid#  touch  mycon1{a..e}.txt
+root@cid#  ls
+root@cid#  exit
+
+step3:
+check hosts os directory pune
+#cd   /root/pune
+#ls
+ all content available create in container
+
+step4:
+create content in host os 
+#cd  /root/pune
+#ls
+#touch hostos{1..5}.txt
+#ls
+
+#docker   start   mycon1
+#docker    attach    mycon1
+root@cid#  cd    /mypune
+root@cid#  ls
+root@cid#  exit
+============================================================================
+Web hosting in container
+
+docker run -dt --name=webcon -p 80:80 ubuntu
+#docker ps
+#docker stop icon1
+#docker ps
+#docker exec -it webcon /bin/bash
+root@124909: apt-get update -y
+root@124909: apt-get install apache2
+root@124909: service apache2 start
+root@124909: cd /var/www/html/
+root@124909: cat > index.html
+		welcome to container website
+root@124909: :wq
+root@124909:exit
+
+For veryfy form host os:
+#curl http://172.17.0.2 (ip of container)
+
+also verify form web browser
+web -chrome/firefox
+http://192.168.1.104 ( IP of host os in which container is running)
+
+
+#docker port webcon
+#docker exec -it webcon /bin/bash
+
+
+
+
+
+
+
+
+
+
+
