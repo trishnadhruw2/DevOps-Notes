@@ -1,0 +1,50 @@
+Why use VSCode for Python?
+Virtual Studio Code (VSCode) is a perfect Integrated Development Environment for Python. It is simple and comes with built-in features that enhance the development experience. VSCode Python extensions come with powerful features like syntax autocomplete, linting, debugging, unit testing, GitOps, virtual environments, notebooks, editing tools, and the ability to customize the editor.  
+----------------------------------------
+Key Features:
+
+Command Palette to access all commands by typing keywords.
+Fully customizable keyboard shortcuts.
+Jupyter extension for data science. Run Jupyter notebook within the IDE.
+Auto linting and formatting.
+Debugging and Testing.
+Git integration.
+Custom code snippets.
+Enhanced editing tools. Multi cursor selection, column selection, outline view, side-by-side preview, and search and modify.
+-----------------------------------------
+Python and Visual Studio Code Setup
+
+Downloading and installing the latest version of Python is straightforward. Go to Python.org and download the latest version for Windows. The installer is also available for Linux/Unix, macOS, and other platforms. After downloading the installer, install Python with default settings.  
+
+After installing Python on our operating system, check whether it is properly working by typing the following command in CLI / Terminal.
+
+python --version
+-------------------------------
+Installing VSCode
+
+Installing VSCode is super simple. Download and install the stable build from the official website. The installer is available for all kinds of operating systems, including web browsers. 
+-------------------------------------------------
+Installing Essential VSCode Python Extensions
+
+The VSCode’s Python extensions will provide us with the helping functionalities for code editing, docstrings, linting, formatting, debugging, testing, and environment selection. 
+----------------------------------------------
+Install Python Extension
+To make the VS Code works with Python, you need to install the Python extension from the Visual Studio Marketplace.
+
+The following picture illustrates the steps:
+First, click the Extensions tab.
+Second, type the python keyword on the search input.
+Third, click the Python extension. It’ll show detailed information on the right pane.
+Finally, click the Install button to install the Python extension.
+Now, you’re ready to develop the first program in Python.
+
+-----------------------------------------------
+
+Create Directory for python
+Open VSCode - File - Add Folder to Workspace - Create directory "Python" - select "Python" - add - create new file "hello.py"
+
+print("Hellow DevOps Engineers")
+
+For add extension - view - extension - seach "python"  - click on install - wait for install - right click on program page - run python file on Terminal - now check output of program.
+
+=====================================================================================

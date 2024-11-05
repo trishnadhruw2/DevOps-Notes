@@ -1,0 +1,62 @@
+Introduction to Visual Studio Code:
+===================================================================================================================================================
+Visual Studio Code is “a free-editor that helps the programmer write code, helps in debugging and corrects the code using the intelli-sense method ”. In normal terms, it facilitates users to write the code in an easy manner. Many people say that it is half of an IDE and an editor, but the decision is up to to the coders. Any program/software that we see or use works on the code that runs in the background. Traditionally coding was used to do in the traditional editors or even in the basic editors like notepad! These editors used to provide basic support to the coders.
+
+Some of them were so basic that it was very difficult in writing basic English level programs in them. As time went by, some programming languages needed a specific framework and support for further coding and development it, which was not possible using these editors. VI Editor, Sublime Text Editor, is one of the many kinds of editors that came into existence. The most prominent and which supports almost every coding language is VISUAL STUDIO CODE. Its features let the user modify the editor as per the usage, which means the user is able to download the libraries from the internet and integrate it with the code as per his requirements.
+
+====================================================================================================================================================
+What can Visual Studio Code do?
+Visual Studio Code has some very unique features. They are listed as below :
+
+Support for multiple programming languages: Supports multiple programming languages. So earlier, programmers needed Web-Support: a different editor for different languages, but it has built-in multi-language support. This also means it easily detects if there’s any fault or cross-language reference, it’ll be able to detect it easily.
+
+Intelli-Sense: It can detect if any snippet of code is left incomplete. Also, common variable syntaxes and variable declarations are made automatically. Ex: If a certain variable is being used in the program and the user has forgotten to declare, intelli-sense will declare it for the user.
+
+Cross-Platform Support: Traditionally, editors used to support either Windows or Linux or Mac Systems. But Visual Studio Code is cross-platform. So it can work on all three platforms. Also, the code works on all three platforms; else, the open-source and proprietary software codes used to be different.
+
+Extensions and Support: Usually supports all the programming languages but, if the user/programmer wants to use the programming language which is not supported then, he can download the extension and use it. And performance-wise, the extension doesn’t slow down the editor as it rums as a different process.
+
+Repository: With the ever-increasing demand for the code, secure and timely storage is equally important. It is connected with Git or can be connected with any other repository for pulling or saving the instances.
+
+Web-Support: Comes with built-in support for Web applications. So web applications can be built and supported in VSC.
+Hierarchy Structure: The code files are located in files and folders. The required code files also have some files, which may be required for other complex projects. These files can be deleted as per convenience.
+
+Improving Code: Some code snippets can be declared a bit differently, which might help the user in the code. This function prompts the user, wherever necessary, to change it to the suggested option.
+
+Terminal Support: Many of the times, the user needs to start from the root of the directory to start with a particular action, in-built terminal or console provides user support to not to switch in-between two screens for the same.
+Multi-Projects: Multiple projects containing multiple files/folders can be opened simultaneously. These projects/folders might or might not be related to each other.
+
+Git Support: Resources can be pulled from Git Hub Repo online and vice-versa; saving can be done too. Resource pulling also means cloning the code which is made available on the internet. This code can later be changed and saved.
+==========================================================================================================================================================
+Advantages and Why should we use Visual Studio Code
+There are many advantages over any other IDE; they are as follow:
+
+1. Cross-platform support : Windows,Linux,Mac etc.
+
+2. Light-weight
+
+3. Intelli-Sense
+
+4. Freeware: Free of Cost- probably the best feature of all for all the programmers out there, even more for the organizations.
+
+5. Many users will use it or might have used it for desktop applications only, but it also provides great tool support for Web Technologies like; HTML, CSS, JSON.
+
+=================================================================================================================================================================
+
+Visual Studio Scope
+The most common languages are :
+
+C#
+Visual Basic
+Java-Script
+R
+XML
+Python
+CSS
+GO
+PERL
+
+Another feature that naïve-users or anyone can see instantly different from other editors is the user-friendliness of the Visual Studio Code. The usability is very easy to handle. The file is arranged hierarchically and has regular software like a toolbar, status bar, and a sidebar. It also has a floating windows explorer window, which can be fixed at one place according to convenience, which consists of the directory structure of files. These files (code files, image folders, etc.) can be opened or renamed from here, and changes will automatically get reflected in the storage.
+=================================================================================================================================================================
+
+

@@ -1,0 +1,69 @@
+VSCode Shortcut:
+================================================================================================
+Visual Studio Code (VS Code) is one of the most popular and most used code editors. It’s open source and free to use. It also provides support for many languages and frameworks, whether through built-in features or the extensive list of extensions available for the editor.
+
+Please note that these Visual Studio Code shortcuts are taken from VS Code’s documentation. If some shortcuts don’t work, it could be due to changes in shortcuts in your editor or file format, or sometimes due to extensions installed.
+
+================================================================================================
+You can open this editor by going to the menu under File > Preferences > Keyboard Shortcuts.
+
+
+Open a folder
+File > Open Folder (Ctrl+K Ctrl+O)
+
+File Explorer
+View > Explorer (Ctrl+Shift+E)
+
+Search view
+View > Search (Ctrl+Shift+F)
+
+Source Control
+View > Source Control (SCM) (Ctrl+Shift+G)
+
+Run and Debug
+View > Run (Ctrl+Shift+D)
+
+Extensions view
+View > Extensions (Ctrl+Shift+X)
+
+Open the Command Palette.
+View > Command Palette... (Ctrl+Shift+P)
+
+Output panel
+View > Output (Ctrl+Shift+U)
+
+Debug Console
+View > Debug Console (Ctrl+Shift+Y)
+
+Problems panel
+View > Problems (Ctrl+Shift+M)
+
+Integrated Terminal
+View > Terminal (Ctrl+`)
+
+Create a new file
+File > New File (Ctrl+N)
+
+Save a file
+File > Save (Ctrl+S)
+
+Auto Save
+File > Auto Save
+
+Run
+Run > Start Debugging (F5)
+
+Programming language extensions
+Python - IntelliSense, linting, debugging, code formatting, refactoring, and more.
+
+Live Preview - Hosts a local server to preview your webpages.
+
+Zoom
+Zoom out (Ctrl+-)
+Zoom in (Ctrl+=)
+
+Customize your editor with color themes.
+File > Preferences > Theme > Color Theme (Ctrl+K Ctrl+T)
+Code > Preferences > Theme > Color Theme on macOS
+
+=========================================================
