@@ -1,0 +1,222 @@
+Ansible Lab Setup - 
+----------------------------------------------------
+Require min 4 system running on amazon linux 2
+
+Open terminal and perform following step on all nodes
+
+ansible control node hostname
+1. set hostname
+#hostnamectl	set-hostname   ansible.example.com
+#sudo su
+
+ansible manage node hostname
+#hostnamectl	set-hostname   node1.example.com
+#hostnamectl	set-hostname   node2.example.com
+#hostnamectl	set-hostname   node3.example.com
+---------------------------------------------------------------------
+2. Create user 
+#useradd    itadmin
+#passwd    itadmin
+111
+111
+
+add sudo permission on all nodes
+#echo  "itadmin  ALL=(ALL)    NOPASSWD:   ALL"   >>   /etc/sudoers 
+-------------------------------------------------------------------
+3.  update ssh configuration file
+#vim     /etc/ssh/sshd_config
+
+PermitRootLogin   yes
+PasswordAuthentication   yes
+:wq
+#systemctl   restart   sshd
+-------------------------------------------------------------------
+verify all system ip address
+
+ansible	192.168.10.111
+node1	192.168.10.113
+node2	192.168.10.114
+node3	192.168.10.115
+------------------------------------------------------------------------------------
+Open Terminal on ansible control Node update host file ( Perform following step on ansible server only )
+
+#vim   /etc/hosts
+192.168.10.111 ansible
+192.168.10.113 node1
+192.168.10.114 node2
+192.168.10.115 node3
+:wq
+
+#ping  node1
+#ping  node2
+#ping  node3
+--------------------------------------------------------------------------------
+Generate ssh key and transfer all nodes
+#su   itadmin
+$ssh-keygen
+$ssh-copy-id    itadmin@node1
+$ssh-copy-id    itadmin@node2
+$ssh-copy-id    itadmin@node3
+--------------------------------------------------------------------------------------
+Install ansible package
+$sudo yum  install python3-pip  -y
+$sudo   yum install pip    -y
+$sudo pip install ansible
+
+---------------------------------------------------------
+or
+---------------------------------------------------------
+$sudo  wget https://dl.fedoraproject.org/pub/epel/epel release latest 7 .noarch.rpm
+$sudo  yum install epel release latest 7 .noarch.rpm
+$sudo  yum update   -y
+$sudo  yum install  git python level python pip openssl ansible  -y
+
+or
+
+$sudo yum install pip  -y
+$sudo pip install ansible 
+--------------------------------------------------------------------------------------------
+check ansible version
+$ansible   --version
+
+update inventory file ( default inventory )
+$sudo  mkdir   /etc/ansible
+$sudo vim   /etc/ansible/hosts
+[web]
+node1
+node2
+node3
+:wq
+
+check all manage nodes successfully connect or not
+$ansible    web    -m   ping
+==========================================================================
+Ansible Lab Setup on Cloud ( Amazon Linux 2023 )
+----------------------------------------------------------------------
+Step1: Launch 4 ec2 instance
+
+1. Ansible Control
+2. node1
+3. node2
+4. node3
+
+write private ip address of instance
+172.31.4.206 ansible
+172.31.4.155 node1
+172.31.11.88 node2
+172.31.15.241 node3
+---------------------------------------------------------------------------------------------
+Step2: Open terminal on ansible control node
+
+set hostname
+$sudo  hostnamectl set-hostname ansible
+$sudo  su
+---------------------------------------------------------------------------------------------
+Step3: create user and allow sudo privilege  ( all nodes )
+#useradd itadmin
+#passwd  itadmin
+111
+111
+#echo "itadmin ALL=(ALL)  NOPASSWD:  ALL" >> /etc/sudoers
+--------------------------------------------------------------------------------------------------------------
+Step4: update ssh configuration file and restart service ( all nodes )
+
+#vim   /etc/ssh/sshd_config
+PermitRootLogin  yes
+PasswordAuthentication  yes
+:wq
+#systemctl  restart sshd
+--------------------------------------------------------------------------------------------------------------
+Step5: Install ansible package
+#dnf  install  ansible*  -y
+#ansible  --version
+--------------------------------------------------------------------------------------------------------------
+Step6: update hosts file
+#vim  /etc/hosts
+172.31.4.206 ansible
+172.31.4.155 node1
+172.31.11.88 node2
+172.31.15.241 node3
+:wq
+--------------------------------------------------------------------------------------------------------------
+Step7: login as a itadmin and generate ssh key ( transfer key to all nodes)
+#su  itadmin
+$ssh-keygen
+$ssh-copy-id   itadmin@node1
+$ssh-copy-id   itadmin@node1
+$ssh-copy-id   itadmin@node1
+--------------------------------------------------------------------------------------------------------------
+Step8: update inventory file
+$sudo  vim  /etc/ansible/hosts
+[web]
+node1
+node2
+node3
+--------------------------------------------------------------------------------------------------------------
+Step9: Verify connectivity ( Via ansible)
+$ansible   web   -m  ping
+===========================================================================================
+Create ansible lab on AWS (using bootstrap code )
+Step1: Launch 4 ec2 instance
+-----------------------------------------------------------------------------------------------------------------------
+1. Ansible Control
+2. node1
+3. node2
+4. node3
+------------------------------------------------------------------------------------------------------------------------
+Step2: Create EC2 for manage nodes  (use following bootstrap code)
+
+#!/bin/bash
+useradd itadmin
+echo 111 | passwd --stdin itadmin
+echo 111 | passwd --stdin root
+echo "itadmin  ALL=(ALL)   NOPASSWD: ALL" >> /etc/sudoers
+sed 's/PasswordAuthentication no/PasswordAuthentication yes/' -i /etc/ssh/sshd_config
+echo PermitRootLogin yes >> /etc/ssh/sshd_config
+systemctl restart sshd
+------------------------------------------------------------------------------------------------------------------------
+Step3: Create EC2 for ansible control node (use following bootstrap code)
+
+
+#!/bin/bash
+yum update -y
+yum install ansible* -y
+hostnamectl  set-hostname ansible
+useradd itadmin
+echo 111 | passwd --stdin itadmin
+echo 111 | passwd --stdin root
+echo "itadmin  ALL=(ALL)   NOPASSWD: ALL" >> /etc/sudoers
+sed 's/PasswordAuthentication no/PasswordAuthentication yes/' -i /etc/ssh/sshd_config
+echo PermitRootLogin yes >> /etc/ssh/sshd_config
+systemctl restart sshd
+
+mkdir  /home/itadmin/punepro
+echo [web] >> /home/itadmin/punepro/inventory
+echo node1 >> /home/itadmin/punepro/inventory
+echo node2 >> /home/itadmin/punepro/inventory
+echo node3 >> /home/itadmin/punepro/inventory
+echo [web:vars] >> /home/itadmin/punepro/inventory
+echo ansible_port=22 >> /home/itadmin/punepro/inventory
+echo ansible_user=itadmin >> /home/itadmin/punepro/inventory
+echo ansible_password=111 >> /home/itadmin/punepro/inventory
+
+echo [defaults]  >> /home/itadmin/punepro/ansible.cfg
+echo inventory=/home/itadmin/punepro/inventory  >> /home/itadmin/punepro/ansible.cfg
+echo remote_user=itadmin  >> /home/itadmin/punepro/ansible.cfg
+echo host_key_checking=false  >> /home/itadmin/punepro/ansible.cfg
+echo interpreter_python = auto_silent   >> /home/itadmin/punepro/ansible.cfg
+echo [privilege_escalation]  >> /home/itadmin/punepro/ansible.cfg
+echo become=yes  >> /home/itadmin/punepro/ansible.cfg
+echo become_user=root  >> /home/itadmin/punepro/ansible.cfg
+echo become_method=sudo  >> /home/itadmin/punepro/ansible.cfg
+echo become_ask_pass=false  >> /home/itadmin/punepro/ansible.cfg
+
+chown -R  itadmin:itadmin  /home/itadmin/punepro
+
+echo "172.31.13.126 node1" >>    /etc/hosts
+echo "172.31.9.167 node2" >>    /etc/hosts
+echo "172.31.15.216 node3" >>    /etc/hosts
+--------------------------------------------------------------------------------------------------------------
+Step4: Verify connectivity ( Via ansible server terminal)
+$ansible   web   -m  ping
+===========================================================================================

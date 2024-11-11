@@ -1,0 +1,129 @@
+what is inventory :
+Inventory file store the information about ansible manage node (clients)
+In inventory we can divide all clients into a  groups as per requirement.
+
+Default location of inventory file - /etc/ansible/hosts
+
+#sudo   vim   /etc/ansible/hosts
+[web]
+node1
+node2
+[db]
+node3
+[dev]
+node4
+node5
+:wq
+===================================================================
+Adhoc commands:
+Adhoc command provide quick and fast interaction with manage node.
+Adhoc commnad never store for future use.
+Adhoc command can execute work on specific client or all clients
+
+eg.
+---------------------------------------------------------------------------------------
+1. Ping to web group
+$ansible   web   -m   ping
+---------------------------------------------------------------------------------------
+2. ping to all nodes
+$ansible   all    -m   ping
+---------------------------------------------------------------------------------------
+3. ping to web group first node
+$ansible  web[0]   -m  ping
+---------------------------------------------------------------------------------------
+4. for show web group node list
+$ansible   web  --list-hosts
+$ansible   db  --list-hosts
+$ansible   all  --list-hosts
+---------------------------------------------------------------------------------------
+5. check manage node free memory
+$ansible  all  -a  "free  -m"
+---------------------------------------------------------------------------------------
+6. check manage node uptime
+$ansible  all  -a  "uptime"
+---------------------------------------------------------------------------------------
+7. create user account
+$ansible  all   -a  "useradd  user1"
+
+above command fail,cause of permission so add sudo before command
+$ansible  all   -a  "sudo useradd  user1"
+$ansible  all   -a   "grep  user1  /etc/passwd"
+---------------------------------------------------------------------------------------
+8. create user account (use -b instead of sudo)
+$ansible  all   -ba   "useradd  user2"
+---------------------------------------------------------------------------------------
+9. create directory 
+$ansible  all   -ba    "mkdir  /pune"
+---------------------------------------------------------------------------------------
+10. create group account
+$ansible  all  -ba   "groupadd punegrp"
+=================================================================
+Ansible Module:
+Ansible modules are units of code that can control system resources or execute system commands. 
+Ansible provides a module library that you can execute directly on manage nodes.
+Ansible module support synchronization feature
+
+for take help regarding to module
+$ansible-doc     <name of module>
+
+eg.
+---------------------------------------------------------------------------------------
+11. create user with help of module
+$ansible   all   -m  user  -ba   "name=user3  state=present uid=2020 comment=account" 
+---------------------------------------------------------------------------------------
+12. create group account
+$ansible  all  -m  group    -ba    "name=punegrp1 state=present"
+---------------------------------------------------------------------------------------
+13. create directory
+$ansible  all  -m  file   -ba   "path=/newpune  state=directory  owner=user3 group=punegrp1"
+---------------------------------------------------------------------------------------
+14. create file
+$ansible  all  -m  file  -ba  "path=/newpune/note.txt  state=touch"
+---------------------------------------------------------------------------------------
+15. write line in file
+$ansible   all   -m   lineinfile  -ba   "path=/newpune/note.txt   line='Welcome to Ansible'"
+$ansible all -a "cat /newpune/note.txt"
+---------------------------------------------------------------------------------------
+16. copy file local to manage nodes
+$touch  info.txt
+
+$ansible   all    -m   copy   -ba  "src=info.txt   dest=/newpune/"
+---------------------------------------------------------------------------------------
+17. remove old repo file
+$ansible   all   -m    file   -ba    "path=/etc/yum.repos.d/server.repo state=absent"
+---------------------------------------------------------------------------------------
+18. Transfer new repo file
+$ansible   all    -m   copy   -ba  "src=/etc/yum.repos.d/server.repo   dest=/etc/yum.repos.d/"
+$ ansible  all   -a    "ls /etc/yum.repos.d/"
+---------------------------------------------------------------------------------------
+19. Install package
+$ ansible  all   -a    "rpm  -q   httpd"
+$ansible   all   -m   yum  -ba   "name= httpd   state=present"
+---------------------------------------------------------------------------------------
+20. Update package
+$ansible   all   -m   yum  -ba   "name= httpd  state=latest"
+---------------------------------------------------------------------------------------
+21. Remove package
+$ansible   all   -m   yum  -ba   "name= httpd  state=absent"
+---------------------------------------------------------------------------------------
+22.  start httpd service
+$ansible   all   -m  service  -ba  "name=httpd   state=started"
+---------------------------------------------------------------------------------------
+23.  restart httpd service
+$ansible   all   -m  service  -ba  "name=httpd   state=restarted"
+---------------------------------------------------------------------------------------
+24.  enable httpd service
+$ansible   all   -m  service  -ba  "name=httpd   enabled=yes"
+---------------------------------------------------------------------------------------
+25. check selinux permanent mode
+$ansible  all  -a   "grep ^SELINUX=  /etc/selinux/config"
+---------------------------------------------------------------------------------------
+26. set selinux pemanent mode on permissive
+$ansible  all  -m  lineinfile  -ba  "path=/etc/selinux/config  regexp=^SELINUX=  line=SELINUX=permissive"
+---------------------------------------------------------------------------------------
+27. reboot all nodes
+$ansible  all  -ba  "init 6"
+---------------------------------------------------------------------------------------
+28. poweroff all nodes
+$ansible  all  -ba  "init 0"
+=======================================================================================
