@@ -1,0 +1,159 @@
+What is Docker Compose:
+Docker Compose is a tool that was developed to help define and share multi-container applications. With Compose, we can create a YAML file to define the services and with a single command, can spin everything up or tear it all down.
+
+it is a tool defining & running multi-container  docker application
+it use yaml files to configure application services (docker-compose-yml)
+we can start all services with a single command ( docker compose up)
+we can stop all services with a single command ( docker compose down)
+we can scale up selected services when required.
+-------------------------------------------------------------------------------------------------------------
+Step1:
+Install docker compose:
+
+check docker compose aleready installed or not
+#docker-compose  -v
+#docker-compose  version
+
+if not install we need to install it following ways
+
+go to git hub
+https://github.com/docker/compose/releases
+
+type following command on terminal
+
+#curl -L "https://github.com/docker/compose/releases/download/1.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+set executable permission
+#chmod  +x  /usr/local/bin/docker-compose
+
+Now check docker-compose version
+#docker-compose   -v
+
+
+or
+#yum install pip
+#pip install -U docker-compose
+-------------------------------------------------------------------------------------------------------------
+Step2:
+Create docker compose file (docker-compose-yml)
+#mkdir	DockerComposeFile
+#cd     DockerComposeFile   
+#touch  docker-compose.yml
+#ls
+
+edit file
+#vim  docker-compose.yml
+version: '3'
+services:
+    web:
+		image: nginx
+    database:
+		image: redis
+:wq
+
+
+Step3:
+check the valid of file 
+#docker-compose config
+
+
+Step4:
+Run docker-compose.yml file
+#docker images
+
+#docker-compose  up  -d (detach mode)
+
+if images not available it pull from hub
+
+#docker images
+#docker   ps
+
+For down 
+docker-compose down
+#docker  ps
+
+
+For port expose modify file
+#vim  docker-compose.yml
+version: '3'
+services:
+    web:
+		image: nginx
+		ports:
+			- 9090:80/tcp 
+    database:
+		image: redis
+:wq
+
+#docker compose  up  -d 
+#docker ps
+#curl  http://127.0.0.1:9090
+
+
+
+step5: Bring down application by command
+		
+#docker-compose down
+#docker  ps
+
+Step6:
+ How to scale services
+ 	-scale
+
+#docker-compose  up  -d  --scale  database=4
+#docker   ps
+#docker-compose down 
+
+Sample Docker File:
+#vim   test.yml
+version: '3'
+services:
+	web:
+		image: nginx
+	db:
+		image: mysql
+		ports:
+			- "3306:3306"
+		environment:
+			- MYSQL_ROOT_PASSWORD=password
+			- MYSQL_USER=user
+			- MYSQL_PASSWORD=password
+			- MYSQL_DATABASE=demodb
+
+:wq
+
+#docker-compose -f test.yml up  -d
+#docker   ps
+#docker-compose down
+
+
+
+Manager-
+
+Worker1
+worker2
+Worker3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

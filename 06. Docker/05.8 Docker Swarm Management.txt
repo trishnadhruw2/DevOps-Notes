@@ -1,0 +1,271 @@
+
+What is Container Orchestration:
+Container Orchiestration is the process of depoying and maintaining large number os containers and servicess for the application to run as intended.
+ 
+It Performed to control and automate tasks like:
+- Deployment of Containers
+- Scaling
+- Resource allocation
+- Load Balancing
+- Health Monitoring  
+
+Docker Swarm:
+Docker swarm is a container orchestration tool part of the docker engine. with swarm developers and IT administrators can deploy and manage a cluster of docker nodes as a single virtual system.
+A Docker swarm is group of eighter physical or virtual machines that are running the docker application and that have been configured to join together in a cluster.
+
+1. Service :
+	Service defines the tasks that need to be executed on the manager and worker nodes.
+
+2. Tasks:
+	Tasks refer to the docker containers that execute the commands defined in the service.
+
+3. Manager Node:
+	The Manager node is responsible for:
+		- Accepting commands and creating service objects.
+		- Allocating IP addresses to tasks
+		- Assigning tasks to nodes
+		- Instructing a worker to run a task
+4. Worker Node:
+	Worker nodes are responsible for checking assigned tasks and executing containers.
+
+=========================================================================================================
+
+Lab Setup For Docker Swarm (Cluster):
+
+StepI: Steps For Lab Setup Using AMI Linux2/2023 Server:
+------------------------------------------------------------------------------------------------------
+Step1: Create min 4 instance on cloud or vm on virtualization
+
+ Server1 = Manager (192.168.30.113) 
+ Server2 = Worker1 (192.168.30.212) 
+ Server3 = Worker2 (192.168.30.136)
+ Server4 = Worker3 (192.168.30.216) 
+-------------------------------------------------------------------------------------------------------
+Step2: Give hostname to all systems
+
+for manager
+#hostnamectl   set-hostname  manager.example.com
+
+for workers
+#hostnamectl   set-hostname   worker1.example.com
+#hostnamectl   set-hostname  worker2.example.com
+#hostnamectl   set-hostname worker3.example.com
+-------------------------------------------------------------------------------------------------------
+Step3: Update Manager server Host File With Private IP:
+
+#vim /etc/hosts
+172.31.6.255 manager.example.com manager
+172.31.15.199  worker1.example.com worker1
+172.31.1.183 worker2.example.com worker2
+172.31.0.36 worker3.example.com worker3
+:wq
+-------------------------------------------------------------------------------------------------------
+Step4:  Install docker on all  system.
+#yum  install  docker  -y
+#systemctl  start   docker
+#systemctl  enable  docker
+=========================================================================================================
+StepII: Steps Form Manage DockerSwarm
+-------------------------------------------------------------------------------------------------------
+Step1:  Create Join Token on Manager
+
+Open Terminal on Manager
+#docker swarm init --advertise-addr    172.31.6.255
+or
+#docker swarm init
+
+after run above command it show join token for worker,copy token and run it on all worker
+-------------------------------------------------------------------------------------------------------
+Step2: For add worker in Dockerswarm
+
+go to all workers system and run following command:
+
+# docker swarm join --token SWMTKN-1-37drlrd4jut24kj8agyu5nmjc2vdyhc7a72ecbjop2we0cxtsx-51b1dn918u91f7dmqtgi7yoky 172.31.6.255:2377
+-------------------------------------------------------------------------------------------------------
+Step3: Open terminal on manager system and verify joined work list
+#docker  node   ls
+-------------------------------------------------------------------------------------------------------
+Step4: For help  of docker swarm commands
+#docker  swarm  --help
+-------------------------------------------------------------------------------------------------------
+Step5: For add second manager in swarm ( create token using following command )
+#docker  swarm  join-token  manager
+
+(add avbove token on system which you want to secondary manager system)
+-------------------------------------------------------------------------------------------------------
+Step6: For show worker token ( to add more worker in swarm )
+#docker  swarm  join-token  worker
+(add avbove token to join worker on worker system)
+-------------------------------------------------------------------------------------------------------
+Step7: for remove (leave) from Dockerswarm
+
+go to worker1 system and following command for leave swarm
+
+#docker swarm  leave   --force
+-------------------------------------------------------------------------------------------------------
+Step8: Now go to manager system and check worker list
+#docker   node   ls
+-------------------------------------------------------------------------------------------------------
+Step9: For show details
+
+#docker node  --help
+#docker node  inspect  manager
+#docker node  inspect  worker1
+-------------------------------------------------------------------------------------------------------
+Step10: For promote worker as manager ( in case of main manager is down, worker can lead as a manager)
+#docker  node promote  worker1.example.com
+#docker  node  ls
+-------------------------------------------------------------------------------------------------------
+Step11: For demote  worker from manager
+#docker  node  demote  worker1.example.com
+#docker   node   ls
+=========================================================================================================
+StepIII: Steps For Manager dockerswarm services
+-------------------------------------------------------------------------------------------------------
+on docker swarm we create two type of  services
+1. Replicated service
+2. Global service
+
+For a replicated service, you specify the number of identical tasks you want to run. For example, you decide to deploy an HTTP service with three replicas, each serving the same content.
+ A global service is a service that runs one task on every node.
+-------------------------------------------------------------------------------------------------------
+Step1: show service help:
+#docker  service  --help
+-------------------------------------------------------------------------------------------------------
+Step2: create 4 replica of nginx ( 4 containers )
+#docker  service  create  --replicas  4  --name   web1  nginx
+#docker  service  ls
+#docker  service  ps  web1
+-------------------------------------------------------------------------------------------------------
+Step3: For scale up ( increase replica/container )
+#docker  service  --help
+#docker  service  scale  web1=10
+#docker  service  ps  web1
+-------------------------------------------------------------------------------------------------------
+Step4: For scale down ( decrease replica/container )
+#docker  service  scale  web1=6
+#docker  service  ps  web1
+-------------------------------------------------------------------------------------------------------
+Step5: now go to worker1 and remove the running container
+#docker  ps
+#docker  rm -f  20 50
+-------------------------------------------------------------------------------------------------------
+Step6: now go to manager and check
+#docker service ls
+
+Note: Manger responsible for run number of container specified in service, if any worker down then manager manage load.
+-------------------------------------------------------------------------------------------------------
+Step7: For remove all web1 services
+#docker service rm web1
+#docker service ls
+-------------------------------------------------------------------------------------------------------
+Step8: For create new service and expose port 80
+
+#docker service create -d -p 80:80 --name webserver nginx
+#docker service ps webserver
+#docker service scale webserver=8
+-------------------------------------------------------------------------------------------------------
+Step9: we can access above services from any node,no need separate ip address
+access it from webbrowser with help of manager IP
+http://192.168.30.113
+-------------------------------------------------------------------------------------------------------
+Step10: For remove webserver services
+#docker  service  rm  webserver
+-------------------------------------------------------------------------------------------------------
+Step11: Create service form dockerhub custom container image ( our personaly uploaded container image on dockerhub )
+#docker service create -d -p 80:80 --name myweb   hackwithabhi/central:v2024
+#docker service ps myweb
+#docker service scale myweb=8
+
+For remove
+#docker  service  rm  myweb
+=========================================================================================================
+StepIV: Docker Swarm Visualizer :
+
+(https://github.com/dockersamples/docker-swarm-visualizer)
+
+To run in a docker swarm:
+
+  #docker service create \
+  --name=viz \
+  --publish=8080:8080/tcp \
+  --constraint=node.role==manager \
+  --mount=type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
+  dockersamples/visualizer
+
+
+#docker service ls
+access visualizer from webbrowser with help of manager IP
+#http:192.168.1.10:8080
+
+remove again all services of webserver
+#docker service rm webserver
+#docker service ps webserver
+
+also check with docker visualizer
+
+=========================================================================================================
+Now run services in global mode
+#docker  service  create  --mode=global  --name   webserver  nginx
+
+this mode bydefault run one service on each node
+#docker service ps webserver
+#docker ps
+
+or
+check visualizer
+
+remove again all services of webserver
+#docker service rm webserver
+#docker service ps webserver
+=========================================================================================================
+Now start number of container on specific targeted server
+
+Start 3 service (container) on Manager
+#docker  service  create  --replicas=3 --constraint="node.role==manager"  --name   web1  nginx
+
+#docker service rm web1
+#docker service ps web1
+
+Start 7 services (container) on worker
+#docker  service  create  --replicas=7 --constraint="node.role==worker"  --name   web1  nginx
+
+==================================================================================================
+if we want to run number of containers on specific worker with help of label
+
+we can create label on two level:
+1. Node level
+2. Engine level
+
+1. Node level:
+first set label to worker1
+
+#docker node update  --help | grep label
+#docker node update  --label-add="ssd=true" worker1.example.com
+
+#docker  service  create  --replicas=3 --constraint="node.labels.ssd==true"  --name   web1  nginx
+
+check docker swarm visualizer container status
+
+2. Engine level
+Now create label worker2
+go to worker2 system 
+
+#vim /etc/docker/daemon.json
+{
+		  "labels"  :  ["name=sevenmentor"]
+}
+:wq
+
+restart system
+
+#systemctl   restart   docker
+
+go to manager check label engin level
+
+#docker node  inspect  worker2.example.com | less
+
+
+now run service on worker2
+#docker  service  create  --replicas=3 --constraint="engine.labels.name==sevenmentor"  --name   web1 nginx
+
