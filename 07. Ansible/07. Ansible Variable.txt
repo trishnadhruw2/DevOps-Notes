@@ -1,0 +1,319 @@
+Ansible Variable:
+Ansible supports variables that can be used to store values that can then be reused throughout files in an Ansible project.
+This can simplify the creation and maintenance of a project and reduce the number of errors.
+A variable name includes letters, numbers, underscores or a mix of either 2 or all of them. However, bear in mind that a variable name must always begin with a letter and should not contain spaces.
+
+Let’s take a look a few examples of valid and unacceptable variable names:
+
+Valid Variable Name Examples:
+football
+foot_ball
+football20
+foot_ball20
+
+Non-valid Variable Name Examples:
+foot ball
+20
+foot-ball
+
+To define variable user "vars" keyword
+---------------------------------------------------------------------------------------------------------
+write a playbook for display variable
+
+$vim  test.yml
+---
+ - name: test variable
+   hosts: all
+   vars:
+     a: Chennai
+   gather_facts: no
+   tasks:
+     - name: dislay a variable
+       debug:
+         msg: "{{ a }}"
+:wq
+---------------------------------------------------------------------------------------------------------
+write a playbook for create user using varibale
+
+$vim newuser.yml
+---
+ - name: create user
+   hosts: all
+   vars:
+     u: ajay
+   gather_facts: no
+   tasks:
+     - name: create user acocunt {{ u }}
+       user:
+         name: "{{ u }}"
+         state: present
+:wq
+
+pass varible to playbook at run time
+
+$ansible-playbook   -e "u=vijay" newuser.yml
+---------------------------------------------------------------------------------------------------------
+
+create playbook for manage selinux permanent mode 
+$vim  semanage.yml
+---
+ - name: change selinux permission
+   hosts: all
+   gather_facts: no
+   vars:
+     m: enforcing
+   tasks:
+     - name: set selinux permission permanently on {{ m }}
+       lineinfile:
+         path: /etc/selinux/config
+         regexp: ^SELINUX=
+         line: "SELINUX={{ m }}"
+:wq
+$ansible-playbook  semanage.yml
+
+for set enforcing mode
+$ansible-playbook  -e "m=enforcing"  semanage.yml
+
+for set disable mode
+$ansible-playbook  -e "m=disable"  semanage.yml
+---------------------------------------------------------------------------------------------------------
+
+Display Aarray type of variable
+
+$vim  city.yml
+---
+ - name: display city list
+   hosts: all
+   vars:
+     c:
+       - Ahmedabad
+       - Pune
+       - Mumbai
+       - Chennai
+       - Delhi
+       - Banglor
+       - Agra
+   gather_facts: no
+   tasks:
+     - name: display c variable
+       debug:
+         msg: "{{ c }}"
+
+:wq
+
+$ansible-playbook  city.yml
+-------------------------------------------------------------------------------------------------------
+manage package using array type of  variable
+$vim   pkgmgnt.yml
+
+---
+ - name: install packages
+   hosts: all
+   vars:
+     p:
+       - nfs*
+       - httpd
+       - vsftpd
+       - git
+   gather_facts: no
+   tasks:
+     - name: install packages {{ p }}
+       yum:
+         name: "{{ p }}"
+         state: present
+:wq
+
+$ansible-playbook  pkgmgnt.yml
+
+--------------------------------------------------------------------------------------------------
+manage users using array type of  variable
+
+$vim  usermgnt.yml
+---
+ - name: manange user accounts
+   hosts: all
+   vars:
+     u:
+       - puser1
+       - puser2
+       - puser3
+       - puser4
+       - puser5
+   gather_facts: no
+   tasks:
+     - name: create user account
+       user:
+         name: "{{ u }}"
+         state: present
+:wq
+
+$ansible-playbook  usermgnt.yml
+
+Note: 
+user module not supported for array type of variable.so we can use loop
+
+loop- 
+pass the list of users to user module in iteration up to finish userlist.
+
+create users user using loop
+$vim  usermgnt.yml
+---
+ - name: manage user accounts
+   hosts: all
+   gather_facts: no
+   tasks:
+     - name: create user account
+       user:
+         name: "{{ item }}"
+         state: present
+       loop:
+         - puser1
+         - puser2
+         - puser3
+         - puser4
+         - puser5
+:wq
+$ansible-playbook  usermgnt.yml
+
+we can also write playbook in following formate ( pass variable to loop then loop pass to user module )
+
+$vim  usermgnt.yml
+---
+ - name: manange user accounts
+   hosts: all
+   vars:
+     u:
+       - puser6
+       - puser7
+       - puser8
+       - puser9
+       - puser10
+   gather_facts: no
+   tasks:
+     - name: create user account
+       user:
+         name: "{{ item }}"
+         state: present
+       loop: "{{ u }}"
+:wq
+
+$ansible-playbook  usermgnt.yml
+----------------------------------------------------------------------------------------------------
+Import variable from external variable file
+
+create sepate variable file
+$myusers.yml
+
+ u:
+   - puser11
+   - puser12
+   - puser13
+   - puser14
+   - puser15
+   - puser16
+   - puser17
+   - puser18
+   - puser19
+   - puser20
+:wq
+
+now create main program for import variable
+
+$vim  usermgnt1.yml
+---
+ - name: manange user accounts
+   hosts: all
+   vars_files:
+     - myusers.yml
+   gather_facts: no
+   tasks:
+     - name: create user account
+       user:
+         name: "{{ item }}"
+         state: present
+       loop: "{{ u }}"
+:wq
+
+$ansible-playbook  usermgnt1.yml
+-----------------------------------------------------------------------------------
+Register variable:
+Register variable can take output of task and store temporary memory ( in register ) which is usable in playbook anywhere as per requirement.
+
+create playbook for test register variable
+
+$vim prog1.yml
+---
+ - name: check time and date
+   hosts: all
+   gather_facts: no
+   tasks:
+     - name: run date command
+       command: date
+       register: r
+     - name: print r variable
+       debug:
+         msg: "{{ r }}"
+------------------------------------------------------------------------------------------
+Special Variable:
+Special variable is aleready defined, we does not require to defind it.
+
+when we run playbook that time one default task is run ( gather facts - it gather information about managed nodes using special variable ) 
+
+To check special variable
+$ansible   node1  -m   setup
+
+write playbook for print special variable
+
+$vim  prog2.yml
+---
+ - name: test gather facts
+   hosts: all
+   tasks:
+     - name: print special variable
+       debug:
+         msg: "{{ ansible_nodename }}"
+:wq
+
+$ansible-playbook  prog2.yml
+============================================================================
+inventory file variable:
+- If you have different servers that share similar attributes or values, you can define them using the group variables. These are used to assign the attributes which are common to all the servers.
+For example, Let’s assume we have two servers target1 and target2 which have same SSH username, port, and password then the inventory file will appear as shown below:
+
+for testing purpose create puneadmin on node1
+$vim  createuser.yml
+---
+ - name: create user
+   hosts: node1
+   gather_facts: no
+   tasks:
+     - name: create user puneadmin
+       user:
+         name: puneadmin
+         state: present
+     - name: set 111 password to puneadmin
+       shell: echo 111 | passwd --stdin puneadmin
+     - name: provide sudo permission to puneadmin without password
+       lineinfile:
+         path: /etc/sudoers
+         line: 'puneadmin ALL=(ALL) NOPASSWD: ALL'
+:wq
+
+$ansible-playbook    createuser.yml
+
+Update inventory file
+$vim inventory
+[pmc]
+node1
+[dev]
+node2
+node3
+[pmc:vars]
+ansible_port=22
+ansible_user=puneadmin
+ansible_password=111
+:wq
+
+Now, in following command ansible use puneadmin to connect with node1 computer,bydefault for other use itadmin
+$ansible  pmc  -a   "useradd  testuser1"
+$ansible  all  -a   "useradd  testuser2"

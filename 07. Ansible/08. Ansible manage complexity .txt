@@ -1,0 +1,100 @@
+Manage Large Playbooks:
+When playbook become large then it become more complex to reduce complexity we can divide it into small small parts.
+
+Manage Complexity by using import-
+1. variable
+2. task
+3. playbook
+--------------------------------------------------------------------------------------------------------
+$cd /home/itadmin/punepro
+$mkdir  imp
+--------------------------------------------------------------------------------------------------------
+Step1: Create Variable file
+$vim imp/myvariable.yml
+ u:
+   - hpuser1
+   - hpuser2
+   - hpuser3
+   - hpuser4
+   - hpuser5
+   - hpuser6
+   - hpuser7
+   - hpuser8
+   - hpuser9
+   - hpuser10
+ g:
+   - hpgroup1
+   - hpgroup2
+   - hpgroup3
+   - hpgroup4
+   - hpgroup5
+   - hpgroup6
+   - hpgroup7
+   - hpgroup8
+   - hpgroup9
+   - hpgroup10
+ p:
+   - httpd
+   - mariadb
+   - vsftpd
+   - git
+:wq
+----------------------------------------------------------------------------------------------------------
+Step2: Create task file for import
+
+$vim  imp/mytasks.yml
+ - name: create user accounts
+   user:
+     name: "{{ item }}"
+     state: present
+   loop: "{{ u }}"
+ - name: create group accounts
+   group:
+     name: "{{ item }}"
+     state: present
+   loop: "{{ g }}"
+ - name: install packages
+   yum:
+     name: "{{ item }}"
+     state: present
+   loop: "{{ p }}"
+:wq
+
+-------------------------------------------------------------------------------------------------------------
+Step3:  Create  sample playbook for import
+
+$vim  imp/mybook.yml
+---
+ - name: this is external playbook
+   hosts: all
+   tasks:
+     - name: create directory /hp
+       file:
+         path: /hp
+         state: directory
+     - name: create file in hp directory
+       file:
+         path: /hp/test.txt
+         state: touch
+:wq
+-------------------------------------------------------------------------------------------------------
+Step4: Create main program
+
+$vim  main.yml
+---
+ - name: manage complexity
+   hosts: all
+   vars_files:
+     - imp/myvariable.yml
+   gather_facts: no
+   tasks:
+     - import_tasks: imp/mytasks.yml
+ - import_playbook: imp/mybook.yml
+:wq
+-------------------------------------------------------------------------------------------------------
+Step5: check syntax and run program
+
+$ansible-playbook  main.yml  --syntax-check
+
+$ansible-playbook  main.yml
+=========================================================================================

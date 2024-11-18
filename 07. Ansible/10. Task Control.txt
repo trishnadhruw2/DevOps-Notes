@@ -1,0 +1,170 @@
+Task Control:
+
+1. Ignore Task:
+- By default, if a task fails, the playbook is aborted. If we want task fail then also playbook ignore it and complete remain task then we can use ignore_errors
+
+eg.
+write playbook for ignore_errors
+
+#vim  playbook4.yml
+---
+ - name: test ignore errors
+    hosts: all
+    gather_facts: no
+    tasks:
+          - name: create user ituser1
+            user:
+                name: ituser
+                state: present
+         - name: install package superman
+            yum:
+                name: superman
+               state: present
+           ignore_errors: yes
+         - name: create group itgroup
+           group:
+               name: itgroup
+              state: present
+:wq
+-----------------------------------------------------------------------------
+if apply ignore_errors to all tasks then 
+---
+ - name: test ignore errors
+    hosts: all
+    gather_facts: no
+    ignore_errors: yes
+    tasks:
+
+=====================================================================
+2. Handlers:
+Handlers are similar like tasks, but written tasks in handlers work when other task is call/notify. 
+other task call/notify if task result is changed (yellow)
+
+$vim   book2.yml
+---
+ - name: handlers testing
+   hosts: all
+   gather_facts: no
+   tasks:
+     - name: install httpd
+       yum:
+         name: httpd
+         state: present
+       notify:
+         - start httpd
+         - enable httpd
+   handlers:
+     - name: start httpd
+       service:
+         name: httpd
+         state: started
+     - name: enable httpd
+       service:
+         name: httpd
+         enabled: yes
+:wq
+
+$ansible-playbook  book2.yml
+
+=====================================================================
+3. Conditions: 
+-  Ansible can use conditionals to execute tasks or plays when certain conditions are met.
+
+For example,
+
+Whenever we have different-different scenarios, we put conditions according to the scenario.
+Conditionals allow administrators to differentiate between managed hosts and assign them functional roles based on the conditions that they meet. Playbook variables, registered variables, and Ansiblefacts can all be tested with conditionals. Operators to compare strings, numeric data, and Boolean values are available.
+======================================================================
+1. write playbook to to test condition
+
+$vim  book4.yml
+---
+ - name: testing condition
+   hosts: all
+   vars:
+     s: mh
+   gather_facts: no
+   tasks:
+     - name: create directory /pune
+       file:
+         path: /punee
+         state: directory
+       when: s == "mh"
+     - name: create directory /aayodhya
+       file:
+         path: /aayodhya
+         state: directory
+       when: s == "up"
+:wq
+
+$ansible-playbook   book4.yml
+-----------------------------------------------------------------------------
+
+2. write playbook to create directory on only specific node
+
+$vim  book5.yml
+---
+---
+ - name: create directory on manage node
+   hosts: all
+   tasks:
+     - name: create directory /node1
+       file:
+         path: /node1
+         state: directory
+       when: ansible_hostname == "node1"
+     - name: create directory /node2
+       file:
+         path: /node2
+         state: directory
+       when: ansible_hostname == "node2"
+     - name: create directory /node3
+       file:
+         path: /node3
+         state: directory
+       when: ansible_hostname == "node3"
+
+:wq
+
+$ansible-playbook   book5.yml
+-----------------------------------------------------------------------------
+---
+3. write playbook for install package on different family OS
+
+$vim  book6.yml
+ - name: testing condition
+   hosts: all
+   tasks:
+     - name: update packages redhat
+       command: yum update -y
+       when: ansible_os_family == "RedHat"
+     - name: update package on debian
+       command: apt-get update -y
+       when: ansible_os_family == "Debian"
+:wq
+$ansible-playbook   book6.yml
+---------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

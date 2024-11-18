@@ -1,0 +1,46 @@
+What is ansible.cfg
+
+This is the brain and the heart of Ansible, the file that governs the behavior of all interactions performed by the control node. 
+In Ansible's case that default configuration file is (ansible. cfg) located in /etc/ansible/ansible. cfg
+Expert recommended create your custom ansible.cfg as per the requirement of project.
+
+---------------------------------------------------------------------------------------
+Step1: create project directory
+
+$cd /home/itadmin
+$mkdir   punepro
+$cd  punepro
+$ls
+---------------------------------------------------------------------------------------
+Step2: create inventory file
+$vim  inventory
+[dev]
+node1
+node2
+node3
+:wq
+---------------------------------------------------------------------------------------
+Step3. create ansible configuration file (ansible.cfg) for pune project
+
+$vim  ansible.cfg
+
+[defaults]
+inventory=/home/itadmin/punepro/inventory
+remote_user=itadmin
+host_key_checking=false
+[privilege_escalation]
+become=yes
+become_user=root
+become_method=sudo
+become_ask_pass=false
+:wq
+
+Note.
+with help of ansible cfg, we set default inventory,default remote user,become sudo etc
+
+$ansible  dev  -a  "useradd user5"
+---------------------------------------------------------------------------------------
+For help ansible module
+$ansible-doc   <name of module>
+eg.
+$ansible-doc   user

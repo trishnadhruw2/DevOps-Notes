@@ -1,0 +1,291 @@
+==========================================================================
+Ansible Playbook:
+
+Ansible Playbooks are the way of sending commands to remote systems through scripts.
+Ansible playbooks are used to configure complex system environments to increase flexibility by executing a script to one or more systems.
+Playbooks are run sequentially.
+All playbooks written in yaml format
+----------------------------------------------------------------------------------------------------------------------------------------
+What is YAML
+YAML stands for Ain’t Markup Language(Yet Another Markup Language).
+It is a data serialization language designed to be directly writable and readable by humans.
+----------------------------------------------------------------------------------------------------------------------------------------
+Play book is very sensitive:
+We should be more cautious with the spaces while writing a ansible playbook. Tabs are not allowed here.
+Character should start exactly or after the previous parameter starts and it should looks like a statement.
+
+Basically Playbooks consists of three sections
+
+1. Host declaration
+2. Variable declaration (optional)
+3. Action / Tasks Declaration
+------------------------------------------------------------------------------------------------------
+1. Write a sample playbook for create user account
+
+$cd  /home/itadmin/punepro/
+$vim  user.yml
+---
+ - name: create user account
+   hosts: all
+   tasks:
+     - name: create user sandip
+       user:
+         name: sandip
+         state: present
+:wq
+
+check playbook syntax:
+$ansible-playbook    user.yml      --syntax-check
+
+run playbook
+$ansible-playbook    user.yml   
+--------------------------------------------------------------------------------------------
+2. Write a playbook for create group account
+
+$vim   group.yml
+---
+ - name: create group acocunt
+   hosts: all
+   tasks:
+     - name: create group ibmgrp
+       group:
+         name: ibmgrp
+         state: present
+:wq
+
+check playbook syntax:
+$ansible-playbook    group.yml      --syntax-check
+
+run playbook
+$ansible-playbook   group.yml   
+-------------------------------------------------------------------------------------
+3. write a playbook for manage file
+
+$vim   managefile.yml
+---
+ - name: manage file and directory
+   hosts: all
+   tasks:
+     - name: create directory /redhat
+       file:
+         path: /redhat
+         state: directory
+         owner: sandip
+         group: ibmgrp
+     - name: create file inside redhat directory
+       file:
+         path: /redhat/linux.txt
+         state: touch
+     - name: write line in file
+       lineinfile:
+         path: /redhat/linux.txt
+         line: 'Linux is Fastest OS'
+:wq
+
+$ansible-playbook  managefile.yml  --syntax-check
+$ansible-playbook managefile.yml
+------------------------------------------------------------------------------
+Write a playbook install apache httpd ( default web page )
+
+$vim   book4.yml
+---
+ - name: configure apache httpd web server
+   hosts: fcroad[0]
+   tasks:
+     - name: install package httpd
+       yum:
+         name: httpd
+         state: present
+     - name: start httpd
+       service:
+         name: httpd
+         state: started
+     - name: enabled httpd
+       service:
+         name: httpd
+         enabled: yes
+:wq
+
+$ansible-playbook   book4.yml  
+
+for verify ( open browser )
+http://<ip address of node1>
+--------------------------------------------------------------------------
+write playbook for host sample web page
+
+$vim  book5.yml
+---
+ - name: configure apache httpd with custom webpage
+   hosts: fcroad[0]
+   tasks:
+     - name: install package
+       yum:
+         name: httpd
+         state: present
+     - name: start and enable httpd
+       service:
+         name: httpd
+         state: started
+         enabled: yes
+     - name: create index file
+       file:
+         path: /var/www/html/index.html
+         state: touch
+     - name: write webpage code
+       lineinfile:
+         path: /var/www/html/index.html
+         line: '<html><head><title>Pune</title></head><body bgcolor=red><h1>Welcome to pune</h1></body></html>'
+:wq
+
+$ansible-playbook   book5.yml  
+
+for verify ( open browser )
+http://<ip address of node1>
+--------------------------------------------------------------------------
+write playbook host custom web page
+$vim  book6.yml
+---
+ - name: host web site using free template
+   hosts: fcroad[0]
+   tasks:
+     - name: install package httpd wget and unzip
+       yum:
+         name:
+           - httpd
+           - wget
+           - unzip
+         state: present
+     - name: start and enable httpd
+       service:
+         name: httpd
+         state: started
+         enabled: yes
+     - name: download free web page
+       command: wget https://www.free-css.com/assets/files/free-css-templates/download/page291/goind.zip
+     - name: extract download webpage
+       shell: unzip goind.zip
+     - name: copy all extracted contents inside defaul apache directory
+       shell: cp -rvf html/* /var/www/html/
+:wq
+
+$ansible-playbook   book6.yml  
+
+for verify ( open browser )
+http://<ip address of node1>
+--------------------------------------------------------------------------
+write playbook for host website in docker container using httpd ( default web page )
+$vim   book7.yml
+---
+ - name: host website inside container
+   hosts: fcroad[0]
+   tasks:
+     - name: install docker
+       yum:
+         name: docker
+         state: present
+     - name: start enable docker
+       service:
+         name: docker
+         state: started
+         enabled: yes
+     - name: create httpd container with default page
+       shell: docker run -dt --name=c1 -t -p 81:80 httpd
+
+:wq
+
+$ansible-playbook   book7.yml  
+
+for verify ( open browser )
+http://<ip address of node1>:81
+--------------------------------------------------------------------------
+write playbook for host website in docker container using httpd ( free template - use docker volume )
+$vim  book8.yml
+
+---
+ - name: host website inside container
+   hosts: fcroad[0]
+   tasks:
+     - name: install docker,wget and unzip
+       yum:
+         name:
+           - docker
+           - wget
+           - unzip
+         state: present
+     - name: start enable docker
+       service:
+         name: docker
+         state: started
+         enabled: yes
+     - name: down free website template
+       shell: wget https://www.free-css.com/assets/files/free-css-templates/download/page291/edu-meeting.zip
+     - name: extract downloaded page
+       shell: unzip edu-meeting.zip
+     - name: create directory to store website contents
+       file:
+         path: /webstore
+         state: directory
+         mode: '777'
+     - name: copy and paste web contents in webstore
+       shell: cp -rvf templatemo_569_edu_meeting/* /webstore/
+     - name: create container
+       shell: docker run -dt --name=c2 -v /webstore/:/usr/local/apache2/htdocs/ --privileged=true -t -p 82:80 httpd
+:wq
+
+
+$ansible-playbook   book8.yml  
+
+for verify ( open browser )
+http://<ip address of node1>:82
+----------------------------------------------------------------------------------------------------------------------------------------
+write playbook for create container using docker file
+
+Create first Dockerfile ( local location )
+$cd  /home/itadmin/pune/
+
+$vim    Dockerfile
+from httpd
+run apt-get update -y
+run apt-get install wget unzip -y
+run wget https://www.free-css.com/assets/files/free-css-templates/download/page290/digimedia.zip
+run unzip digimedia.zip
+run cp -rvf templatemo_568_digimedia/* htdocs/
+expose 80
+:wq
+
+$vim  book9.yml
+---
+ - name: host website inside container
+   hosts: fcroad[0]
+   tasks:
+     - name: install docker,wget and unzip
+       yum:
+         name:
+           - docker
+           - wget
+           - unzip
+         state: present
+     - name: start enable docker
+       service:
+         name: docker
+         state: started
+         enabled: yes
+     - name: create directory docker
+       file:
+         path: /docker
+         state: directory
+     - name: transfer docker file
+       copy:
+         src: Dockerfile
+         dest: /docker/
+     - name: create image using docker file
+       shell: cd /docker; docker build -t myweb .
+     - name: create container from myweb image
+       shell: docker run -dt --name=c3 -t -p 83:80 myweb
+:wq
+
+$ansible-playbook   book9.yml  
+
+for verify ( open browser )
+http://<ip address of node1>:83
+-------------------------------------------------------------------------------------------------------------------------

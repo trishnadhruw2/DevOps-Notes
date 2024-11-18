@@ -1,0 +1,51 @@
+=========================================================================================
+Ansible Vault:
+- Ansible use SSH private and public keys and SSL certificates to transfer file(playbook) from server to client.
+- Its bad practice to save this sensitive information in plain text, just think what happen if any authorise person change,modify or steal playbooks.
+- Ansible provides us with a handy feature known as Ansible Vault.
+- Ansible Vault can encrypt variables, or even entire files and YAML playbooks, so no one can access playbook without password.
+--------------------------------------------------------------------------------------------
+1. For encrypt playbook
+$ansible-vault   encrypt    prog1.yml
+--------------------------------------------------------------------------------------------
+2. For view encrypted playbook
+$ansible-vault   view   prog1.yml
+--------------------------------------------------------------------------------------------
+3. For edit encrypted playbook
+$ansible-vault   edit   prog1.yml
+--------------------------------------------------------------------------------------------
+4.  For change password
+$ansible-vault   rekey   prog1.yml
+--------------------------------------------------------------------------------------------
+5. For run encrypted playbook
+$ansible-playbook   prog1.yml        --ask-vault-pass
+ --------------------------------------------------------------------------------------------
+6. For decrypt playbook
+$ansible-vault    decrypt    prog1.yml
+ --------------------------------------------------------------------------------------------
+7. For check syntax
+$ansible-playbook       user.yml         --ask-vault-pass      --syntax-check
+ --------------------------------------------------------------------------------------------
+8. For encrypt all playbook at a time
+$ansible-vault   encrypt    *.yml
+ --------------------------------------------------------------------------------------------
+9. For decrypt all playbook at a time
+$ansible-vault   decrypt    *.yml
+--------------------------------------------------------------------------------------------
+10. Encrypt playbook at the time of creation
+$ansible-vault   create   prog0.yml
+--------------------------------------------------------------------------------------------
+11.  Manage password from password file
+
+I. Create password file
+$vim   pass.yml
+$ertiYQch%&64544t5$$thyuU0
+:wq
+
+II.  manage playbook via pass.yml
+
+$ansible-vault    encrypt     --vault-password-file=pass.yml      user.yml     
+$ansible-vault    view     --vault-password-file=pass.yml      user.yml   
+$ansible-vault    edit     --vault-password-file=pass.yml      user.yml   
+$ansible-playbook      --vault-password-file=pass.yml      user.yml   
+--------------------------------------------------------------------------------------------
