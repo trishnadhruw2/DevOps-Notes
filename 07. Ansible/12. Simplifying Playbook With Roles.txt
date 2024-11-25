@@ -1,0 +1,279 @@
+Ansible Role:
+- Ansible playbooks can be very similar code used in one playbook can be useful in other playbooks also.
+- To make it easy to re-use the code, roles can be used.
+- An Ansible role is composed of multiple folders, each of which contain several YAML files.
+- By default, they have a main.yml file, but they can have more than one when needed.
+- This is a standardized structure for all Ansible roles, which allows Ansible playbooks to automatically load predefined variables, tasks, handlers, templates, and default values located in separate YAML files.
+-------------------------------------------------------------------------------------------------------------------------------
+Advantages of Role:
+1. Easy to manage big project
+2. Role provide standard way to work with ansible
+3. Multiple developer can work simulteneously
+-------------------------------------------------------------------------------------------------------------------------------
+Ansible Galaxy:
+Ansible Galaxy is a galaxy website where users can share roles and to a command-line tool for installing, creating,and managing roles. 
+ansible galaxy command use for manage roles.
+-------------------------------------------------------------------------------------------------------------------------------
+Here are some helpful Ansible Galaxy commands, such as:
+
+1. To display the list of roles
+$ansible-galaxy      list
+
+2. To remove role.
+$ansible-galaxy     remove   [role]
+
+3. To create a role 
+$ansible-galaxy   init    <name of role>
+====================================================================
+I. Configure Web Server Using Role:
+
+#su itadmin
+$cd  /home/itadmin/punepro
+------------------------------------------------------------------------
+Step1: Create main program
+$vim   webserver.yml
+---
+ - name: configure web server
+   hosts: all
+   roles:
+     - apache
+:wq
+-----------------------------------------------------------------------
+Step2: Create role directory
+$mkdir   role
+------------------------------------------------------------------------
+Step3: update role path in ansible.cfg file
+$vim   ansible.cfg
+[defaults]
+roles_path=/home/itadmin/punepro/role/
+:wq
+------------------------------------------------------------------------
+Step4: create role for webserver
+$cd   role
+$ansible-galaxy    init     apache
+$tree    apache
+------------------------------------------------------------------------
+Step5: Write code for tasks
+
+$vim   apache/tasks/main.yml
+---
+# tasks file for apache
+ - name: install httpd
+   yum:
+     name: "{{ p }}"
+     state: present
+ - name: start and enable httpd
+   service:
+     name: "{{ s }}"
+     state: started
+     enabled: yes
+ - name: transfer web page
+   template:
+     src: file1.j2
+     dest: /var/www/html/index.html
+   notify:
+     - restart httpd
+:wq
+------------------------------------------------------------------------
+Step6: Write code for variable
+$vim  apache/vars/main.yml
+---
+# vars file for apache
+ p: httpd
+ s: httpd
+
+:wq
+------------------------------------------------------------------------
+Step7: create template file1.j2
+$vim  apache/template/file1.j2
+------------------------------
+Welcome to {{ ansible_hostname }}
+------------------------------
+:wq
+--------------------------------------------------------------------------
+Step8: update handler file
+$vim  apache/handlers/main.yml
+---
+# handlers file for apache
+ - name: restart httpd
+   service:
+     name: "{{ s }}"
+     state: restarted
+:wq
+--------------------------------------------------------------------------
+Step9: check syntax and run playbook
+$cd ..
+$ansible-playbook    webserver.yml     --syntax-check
+$ansible-playbook    webserver.yml 
+====================================================================
+II. Configure NFS Server Using Role:
+
+1. Create main playbook
+$vim  configurenfs.yml
+---
+ - name: configure nfs server
+   hosts: all
+   roles:
+     - nfs
+:wq
+-------------------------------------------------------------------------------
+2. Create nfs role
+$cd  role
+$ansible-galaxy  init  nfs
+$tree  nfs
+-------------------------------------------------------------------------------
+3. Update tasks file
+$vim  nfs/tasks/main.yml
+ - name: install nfs package
+   dnf:
+     name: "{{ p }}"
+     state: present
+ - name: start nfs
+   service:
+     name: "{{ s }}"
+     state: started
+ - name: enable nfs
+   service:
+     name: "{{ s }}"
+     enabled: yes
+ - name: create directory for share
+   file:
+     path: /tcs
+     state: directory
+     mode: '777'
+ - name: transfer file for test purpose
+   copy:
+     src: test.txt
+     dest: /tcs/
+ - name: update nfs configuration file
+   lineinfile:
+     path: /etc/exports
+     line: '/tcs 10.0.0.0/24(rw)'
+   notify:
+     - restart nfs
+ - name: add nfs into firewall
+   command: firewall-cmd --permanent --add-service=nfs
+ - name: reload firewall
+   command: firewall-cmd --reload
+:wq
+------------------------------------------------------------------------------------------------------
+4. Update variable file
+
+$vim  nfs/vars/main.yml
+ p: nfs*
+ s: nfs-server
+:wq
+------------------------------------------------------------------------------------------------------
+5. Create test file for share
+
+$vim  nfs/files/test.txt
+this file is create for testing purpose
+:wq
+------------------------------------------------------------------------------------------------------
+6. Update handler file
+
+$vim  nfs/handlers/main.yml
+ - name: restart nfs
+   service:
+     name: "{{ s }}"
+     state: restarted
+:wq
+------------------------------------------------------------------------------------------------------
+7. Check syntax and run Main playbook
+$cd ..
+$ansible-playbook  configurenfs.yml  --syntax-check
+
+for run playbook
+$ansible-playbook  configurenfs.yml 
+===============================================================================
+III. Configure Samba Server using Role
+
+1.Create Main program
+
+$vim  configuresamba.yml
+---
+ - name: configure samba server
+   hosts: all
+   roles:
+     - samba
+:wq
+------------------------------------------------------------------------------------------------------
+2. Update tasks file
+$vim  samba/tasks/main.yml
+ - name: install required packages
+   dnf:
+     name: "{{ item }}"
+     state: present
+   loop: "{{ p }}"
+ - name: start and enable samba service
+   service:
+     name: "{{ item }}"
+     state: started
+     enabled: yes
+   loop: "{{ s }}"
+ - name: add samba into firewall
+   command: firewall-cmd --permanent --add-service=samba
+ - name: reload firewall
+   command: firewall-cmd --reload
+ - name: create directory to share
+   file:
+     path: /Intel
+     state: directory
+     setype: samba_share_t
+ - name: Transfer file for test purpose
+   template:
+     src: samba.j2
+     dest: /Intel/processor.txt
+ - name: update samba configuration file
+   blockinfile:
+     path: /etc/samba/smb.conf
+     block: |
+       [platinum]
+       comment=welcome
+       path=/Intel
+       browseable=yes
+       read only=yes
+       valid users=frankenstein
+       hosts allow=10.0.0.0/24
+   notify:
+     - restart samba
+ - name: create frankenstein user
+   user:
+     name: frankenstein
+     state: present
+     comment: sambauser
+ - name: add samba passwd for frankenstein
+   command: echo -e “123\n123” | smbpasswd -a -s frankenstein
+:wq
+------------------------------------------------------------------------------------------------------
+3. Update variable file
+$vim  samba/vars/main.yml
+  p:
+   - samba
+   - samba-common
+   - samba-client
+ s:
+   - smb
+   - nmb
+:wq
+------------------------------------------------------------------------------------------------------
+4. Update Handlers file
+
+$vim  samba/handlers/main.yml
+ - name: restart samba
+   service:
+     name: "{{ item }}"
+     state: restarted
+   loop: "{{ s }}"
+:wq
+------------------------------------------------------------------------------------------------------
+5. Create template file for share
+$vim  samba/template/samba.j2
+Welcome to samba server on {{ ansible_nodename}}
+:wq
+------------------------------------------------------------------------------------------------------
+6.  Check syntax and run playbook
+$ansible-plabook  configuresamba.yml   --syntax-check
+
+$ansible-plabook  configuresamba.yml  
+------------------------------------------------------------------------------------------------------

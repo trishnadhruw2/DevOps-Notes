@@ -1,0 +1,215 @@
+Deploy File:
+To deploy file on manage node ansible have number of modules such as copy,file,lineinfile,blockinfile etc.
+
+Sample playbook for manage file and directory
+#vim  managefiles.yml
+---
+ - name: manage file directory
+   hosts: all
+   gather_facts: no
+   tasks:
+     - name: create user account
+       user:
+         name: karan
+         state: present
+         comment: 'system admin'
+     - name: create group sysgrp
+       group:
+         name: sysgrp
+         state: present
+     - name: create directory
+       file:
+         path: /automation
+         state: directory
+         owner: karan
+         group: sysgrp
+         setype: httpd_sys_content_t
+     - name: create file in automation directory
+       file:
+         path: /automation/ansible.txt
+         state: touch
+     - name: write lines in file
+       blockinfile:
+         path: /automation/ansible.txt
+         block: |
+           ansible is automation tool
+           ansible is open source
+           ansible easy to use
+           ansible code written in python
+           ansible popularly use by devops,systemadmin,infraadmin etc
+           ansible playbook written in yaml
+:wq
+#ansible-playbook  managefiles.yml
+
+Note:
+In ansible we have number of modules but every not perfect and correct in some situation that time we can use jinja templating.
+-----------------------------------------------------------------------------------------------
+What is Jinja Templates:
+- Ansible uses the Jinja2 templating system for template files.
+-  Jinja2 is a powerful and easy to use python-based templating engine.
+-  Jinja2 templates are simple template files that store variables that can change from time to time. When Playbooks are executed, these variables get replaced by actual values defined in AnsiblePlaybooks.
+- In most cases, Jinja2 template files are used for creating files or replacing configuration files on servers. 
+- jinja template file bydefault create with .j2 extension.
+
+- Jinja2 is a powerful and easy to use python-based templating engine that comes in handy in an IT environment with multiple servers where configurations vary every other time.
+- Jinja2 templates are simple template files that store variables that can change from time to time. When Playbooks are executed, these variables get replaced by actual values defined in AnsiblePlaybooks. This way, templatingoffers an efficient and flexible solution to create or alter configuration file with ease.
+- In most cases, Jinja2 template files are used for creating files or replacing configuration files on servers. Apart from that, you can perform conditional statements such as loops and if-else statements, and transform the data using filters and so much more.
+- Template files bear the .j2 extension, implying that Jinja2 templatingis in use
+
+eg.
+--------------------------------------------------------------------------------------------
+create jinja template file
+#vim   file1.j2
+Welcome to {{ c }}
+:wq
+
+create playbook for transfer file1.j2
+#vim  pbook1.yml
+---
+ - name: test jinja templates
+   hosts: all
+   gather_facts: no
+   vars:
+     c: India
+   tasks:
+     - name: Transfer pune jinja file
+       template:
+         src: file1.j2
+         dest: /automation/pune.txt
+:wq
+
+#ansible-playbook  pbook1.yml
+#ansible  all  -a  "cat  /automation/pune.txt"
+-----------------------------------------------------------------------------------------------
+Create sample apache program to transfer web page
+
+create sample web page
+#vim  file2.j2
+==========================================
+Welcome to {{ ansible_nodename }}
+This Computer Free Memory = {{ ansible_memfree_mb }}
+==========================================
+:wq
+
+create playbook for transfer file3.j2
+#vim  apache.yml
+---
+ - name: configure apache web server
+   hosts: all
+   tasks:
+     - name: install httpd
+       yum:
+         name: httpd
+         state: present
+     - name: start and enable httpd
+       service:
+         name: httpd
+         state: started
+         enabled: yes
+     - name: transfer web page using templating them
+       template:
+         src: file3.j2
+         dest: /var/www/html/index.html
+:wq
+#ansible-playbook  apache.yml
+
+for verify
+#curl  http://node1
+#curl  http://node2
+#curl  http://node3
+=============================================================
+create template for write apache configuration file
+
+#vim  file4.j2
+<VirtualHost *:80>
+ServerName {{ ansible_nodename }}
+ServerAdmin root@{{ ansible_nodename }}
+DocumentRoot /var/www/html/
+</VirtualHost>
+<Directory /var/www/html/>
+<RequireAll>
+Require all granted
+</RequireAll>
+</Directory>
+:wq
+
+#vim file5.j2
+***********************************************************
+Welcome to Apache Webserver on {{ ansible_hostname }}
+***********************************************************
+:wq
+
+update apache playbook for transfer file3.j2
+#vim  apache1.yml
+
+---
+ - name: configure apache web server
+   hosts: all
+   tasks:
+     - name: install httpd
+       yum:
+         name: httpd
+         state: present
+     - name: start and enable httpd
+       service:
+         name: httpd
+         state: started
+         enabled: yes
+     - name: transfer web page using templating them
+       template:
+         src: file5.j2
+         dest: /var/www/html/index.html
+     - name: transfer web server configuration file
+       template:
+         src: file4.j2
+         dest: /etc/httpd/conf.d/pune.conf
+     - name: restart httpd
+       service:
+         name: httpd
+         state: restarted
+:wq
+
+#ansible-playbook  apache.yml
+
+for verify:
+#ansible all -a "cat /etc/httpd/conf.d/pune.conf"
+-------------------------------------------------------------------------------------------------------
+create jinja template using for loop
+
+#vim  loop.j2
+====================================
+The List of Top City in India
+====================================
+{% for item in city %}
+{{ item }}
+{% endfor %}
+-----------------------------------------------------------
+:wq
+
+create playbook for transer above template file
+#vim  topcity.yml
+---
+ - name: for loop in jinja template
+   hosts: all
+   gather_facts: no
+   vars:
+     city:
+       - Mumbai
+       - Delhi
+       - Kolkata
+       - Chennai
+       - Hyderabad
+       - Banglor
+       - Ahmedabad
+   tasks:
+     - name: Transfer template file4.j2
+       template:
+         src: file4.j2
+         dest: /automation/Topcity.txt
+:wq
+
+#ansible-playbook  pbook4.yml
+
+For verify:
+#ansible  all   -a  "cat  /automation/Topcity.txt"
+================================================================

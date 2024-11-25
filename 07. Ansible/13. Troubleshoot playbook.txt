@@ -1,0 +1,171 @@
+Ansible Playbook Troubleshoot:
+
+- There are several issues that can occur during a playbook run, mainly related to the syntax of either the playbook or any of the templates it uses, or due to connectivity issues with the managed hosts (for example, an error in the host name of the managed host in the inventory file).
+- Those errors are issued by the ansible-playbook command at execution time.
+------------------------------------------------------------------------------------------------------
+1. Syntax Check:
+
+--syntax-check
+ option, which checks the YAML syntax for the playbook.
+
+eg.
+
+create sample playbook
+#vim prog1.yml
+---
+ - name: create directory
+   hosts: all
+   gather_facts: no
+   tasks:
+     - name: Create directory /sony
+       file:
+         path: /sony
+         state: directory
+:wq
+
+$ ansible-playbook prog1.yml      --syntax-check
+------------------------------------------------------------------------------------------------------
+2. Run playbook step by step
+
+--step 
+option to step through a playbook one task at a time. (every time take confirmation from user)
+
+
+#vim  prog2.yml
+---
+ - name: create directory
+   hosts: all
+   gather_facts: no
+   tasks:
+     - name: Create directory /sony
+       file:
+         path: /sony
+         state: directory
+     - name: Create file /sony/bravia.txt
+       file:
+         path: /sony/bravia.txt
+         state: touch
+:wq
+
+#ansible-playbook   prog2.yml    --step
+------------------------------------------------------------------------------------------------------
+3. To start playbook from specific task we can use following option
+
+--start-at-task
+
+eg. 
+$ansible-playbook  playbook1.yml    --start-at-task="remove httpd"
+create sample playbook
+#prog3.yml
+---
+ - name: create directory
+   hosts: all
+   gather_facts: no
+   tasks:
+     - name: Create directory /sony
+       file:
+         path: /sony
+         state: directory
+     - name: Create file /sony/bravia.txt
+       file:
+         path: /sony/bravia.txt
+         state: touch
+     - name: write line
+       lineinfile:
+         path: /sony/bravia.txt
+         line: 'Welcome to Sony Corporation'
+:wq
+
+#ansible-playbook   prog3.yml    --start-at-task="write line"
+
+------------------------------------------------------------------------------------------------------------
+4. Dry Run:
+Using Ansible’s dry run feature enables users to execute a playbook without making changes to the servers. 
+It uses the built-in check mode to proof a playbook for errors before execution.
+
+create sample playbook
+#vim  prog4.yml
+---
+ - name: create directory
+   hosts: all
+   gather_facts: no
+   tasks:
+     - name: Create directory /microsft
+       file:
+         path: /microsoft
+         state: directory
+:wq
+
+#ansible-playbook  prog4.yml  --check
+
+
+5. Difference 
+--diff option show to us difference ( changes made on manage node)
+eg.
+#ansible-playbook  prog4.yml  --diff
+
+Combining the --check and --diff flags with the ansible-playbook command gives you a more detailed overview of all the changes made by your playbook:
+
+#ansible-playbook  prog4.yml  --check  --diff
+#ansible-playbook  prog4.yml
+#ansible-playbook  prog4.yml  --check  --diff
+---------------------------------------------------------------------------------------------------------
+6. Verbose configuration:
+
+The ansible-playbook -v option provides additional debugging information, with up to four total levels.
+
+For Output data is displayed
+#ansible-playbook  prog4.yml  -v
+
+For Display Input & Output
+#ansible-playbook  prog4.yml  -vv
+
+For Display information about how connection manage hosts
+#ansible-playbook  prog4.yml -vvv
+
+For show everything in details backend running script,ssh algorithms info etc
+#ansible-playbook  prog4.yml  -vvvv
+---------------------------------------------------------------------------------------------------------------
+6. Ansible Logs:
+
+By default, Ansibleis not configured to log its output to any log file. 
+It provides a built-in logging infrastructure that can be configured through the "log_path" parameter in the default section of the ansible.cfg configuration file,
+
+To store log of pune project in  following file
+/home/itadmin/punepro/ansible.log
+
+Edit punepro ansible.cfg file and add log_path in [defaults] section
+
+#vim  ansible.cfg
+[defaults]
+log_path=/home/itadmin/punepro/ansible.log
+:wq
+
+#ls   /home/itadmin/punepro/
+
+Run any plabook and then check log file
+#ansible-playbook  prog4.yml
+#ls
+#cat  ansible.log
+
+#ls   /home/itadmin/punepro/
+#cat  /home/itadmin/punepro/ansible.log
+==========================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
