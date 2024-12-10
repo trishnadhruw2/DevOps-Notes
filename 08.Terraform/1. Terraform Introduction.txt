@@ -1,0 +1,69 @@
+what is Terraform:
+
+Terraform is an open-source, infrastructure as configuration software tool created by HashiCorp. Users define and provide data center infrastructure using a declarative configuration language known as HashiCorp Configuration Language, or optionally JSON.
+
+Terraform is an IAC tool, used primarily by DevOps teams to automate various infrastructure tasks. The provisioning of cloud resources, for instance, is one of the main use cases of Terraform. It’s a cloud-agnostic, open-source provisioning tool written in the Go language and created by HashiCorp.
+
+Terraform allows you to describe your complete infrastructure in the form of code. Even if your servers come from different providers such as AWS or Azure, Terraform helps you build and manage these resources in parallel across providers.
+==========================================================================
+Terraform History:
+
+Terrform was firstly introduced in july 2014,
+It invented by Mitchell Hashimoto.
+It was written in go language.
+it is very usefull in case of multicloude environment and hybrid cloud like openstack with AWS.
+Terraform use Hashcorp configure language.
+It is similar to JSON but easy to understand human in readable formate.
+
+Various cloud provider have tools which work like a terraform but they work on specific cloud infra such as....
+AWS - CloudFormation
+Azure - ARM Template
+GCP - Deployment Management
+OpenStack - Heat
+
+Opensource - Terraform,Ansible,
+==========================================================================
+Infrastructure as Code - Tools
+
+There are a lot of tools that allow you to deploy infrastructure as code:
+Terraform
+CloudFormation
+Heat
+Ansible
+SaltStack
+Chef, Puppet, Others
+
+Not all of these tools are targeted for the same purpose. It is important to understand the difference between Configuration Management and Infrastructure Orchestration:
+
+Ansible, Chef and Puppet are configuration management tools which means they are primarily designed to install and manage software on existing servers
+Terraform and CloudFormation are infrastructure orchestration tools which are designed to provision servers and infrastructure themselves.
+
+You can use infrastructure orchestration tools and configuration management tools in tandem. For example you could use Terraform to create a new EC2 instance on AWS, Terraform can then call Ansible to install and configure software and applications on the EC2 instance. 
+==========================================================================
+Benefits of Infrastructure-as-Code (IaC)
+IaC replaces standard operating procedures and manual effort required for IT resource management with lines of code. Instead of manually configuring cloud nodes or physical hardware, IaC automates the process infrastructure management through source code.
+
+Here are several of the major key benefits of using an IaC solution like Terraform:
+
+Speed and Simplicity: IaC eliminates manual processes, thereby accelerating the delivery and management lifecycles. IaC makes it possible to spin up an entire infrastructure architecture by simply running a script.
+
+Team Collaboration: Various team members can collaborate on IaC software in the same way they would with regular application code through tools like Github. Code can be easily linked to issue tracking systems for future use and reference.
+
+Error Reduction: IaC minimizes the probability of errors or deviations when provisioning your infrastructure. The code completely standardizes your setup, allowing applications to run smoothly and error-free without the constant need for admin oversight.
+
+Disaster Recovery: With IaC you can actually recover from disasters more rapidly. Because manually constructed infrastructure needs to be manually rebuilt. But with IaC, you can usually just re-run scripts and have the exact same software provisioned again.
+
+Enhanced Security: IaC relies on automation that removes many security risks associated with human error. When an IaC-based solution is installed correctly, the overall security of your computing architecture and associated data improves massively.
+
+While there are many other benefits of employing IaC, things like speed, accuracy, data visibility, and security are key reasons that organizations choose to implement solutions like Terraform. 
+==========================================================================
+Terraform vs. Competitors:
+There are alternatives on IaC market, each with its own advantages and drawbacks when stacked up against Terraform. Here are a few of the other major IaC tools on the market and how they compare with Terraform.
+
+Terraform vs. Ansible
+Ansible is an IaC tool designed for automating system configuration and management. The main difference is that Ansible is not a provisioning tool and follows a procedural approach, meaning the user needs to manually specify the steps of provisioning. This provides DevOps users with more control, but also requires more work. Ansible is best for provisioning servers with the proper software and updates already configured, while Terraform can set up and orchestrate infrastructure from scratch. Finally, Terraform allows for complete lifecycle management, while Ansible does not.
+
+Terraform vs. Pulumi
+Pulumi is a popular open-source IaC tool that can be used to design, deploy and manage cloud infrastructure resources. As opposed to Terraform, Pulumi doesn’t use a domain-specific software language, allowing users to deploy in GO, .NET, JavaScript, and others. And while Terraform follows strict coding guidelines, Pulumi does not, making it a bit more flexible in certain scenarios. However, Pulumi’s community is substantially smaller than Terraform’s, meaning there is less documentation available. While there are some flexibility benefits to Pulumi, Terraform is generally superior the larger the scope of deployment.
+==========================================================================
+

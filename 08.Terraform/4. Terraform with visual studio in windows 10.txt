@@ -1,0 +1,76 @@
+Step for Install Terraform windows 10 or 11:
+=====================================================================================================
+Step1: Google Search "Download Terraform" visit first offical website.
+https://developer.hashicorp.com/terraform/downloads
+
+click on "386 - Download" download zip file will be start.
+=====================================================================================================
+Step2:Extract it in C drive
+Go to C Drive - Programming File - create Directoy "Terraform".
+
+Go to download right click on downloded terraform file (required winrar) and extract it in c:\programming files\Terraform\
+=====================================================================================================
+Step3: Set Environment Variable Path
+Search - environmental variable - user variable - Path (doubleclick) - new  - c:\programming files\Terraform\ - ok.
+=====================================================================================================
+Step4: Open cmd (win+r "cmd")
+>terraform  -version
+=====================================================================================================
+Step5: Download git - 
+google search "git download for windows"
+https://git-scm.com/downloads (click on this link)
+
+Download For Windows - Standalone Installer - 64-bit Git for Windows setup - download it within few second.
+
+Install git bydefault with settings from download folder.
+=====================================================================================================
+Step6: search open "Git Bash" - set font as per requirement.
+
+> terraform version
+
+========================================================================================================
+Step7: download visual studio code
+
+https://code.visualstudio.com/download
+
+Install VSCodeUserSetup-x64.exe with default settings.
+
+Open "Visual Studio Code" - set themes - dark/light - click on "Extension(ctrl + shift + x) - search and click on "HashiCorp Terraform ..." - click on "Install" - close "Visual Studio Code".
+=========================================================================================================
+Step8: Create sample program
+
+Open cmd (win + r) "cmd"
+
+mkdir c:\Terraform
+mkdir c:\Terraform\hello-world
+cd c:\Terraform\hello-world
+code .
+
+"Visual Studio Code" open with hello-world path - click on "new file" - "first.tf" click enter -
+-------------------------------------------------------------
+output "hello1" {
+    value = "hello terraform automation world"
+
+}
+-------------------------------------------------------------
+press "ctrl + s" open cmd - 
+
+cd c:\Terraform\hello-world
+terraform plan
+=========================================================================
+
+Step9: Take input from user
+------------------------------------------------------------
+variable username{}
+
+output printname{
+         value = "Hello, ${var.username}"
+}
+------------------------------------------------------------
+press "ctrl + s" open cmd - 
+
+cd c:\Terraform\hello-world
+terraform plan
+==============================================================================
+
+

@@ -1,0 +1,37 @@
+Terraform Variable:
+==========================================================
+Crete first program "first.tf"
+
+output hello1 {
+    value = "Hello World"
+}
+
+save it.
+
+open cmd & run following command
+>terraform plan
+============================================================
+Take input from user
+Crete first program "second.tf"
+
+variable username{}
+
+output printname{
+         value = "Hello, ${var.username}"
+}
+
+=====================================================================
+set comment
+
+
+Crete first program "thired.tf"
+
+//this is comment
+#this is another comment
+
+output hello1 {
+    value = "Hello World"
+}
+
+save it.
+========================================================================

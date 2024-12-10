@@ -1,0 +1,176 @@
+Step:1. Create your working folder.
+
+#mkdir /terraform/pro6
+#cd   /terraform/pro6
+
+=================================================================
+Step:2. Create “vars.tf”
+
+All variables will be in this file. Now, there is only one item but there will be more…
+variable "AWS_REGION" {
+    default = "ap-southeast-1"
+}
+variable "AWS_AMI" {
+    default = "ami-0a4408457f9a03be3"
+}
+variable "az" {
+    default = "ap-southeast-1a"
+}
+variable "akey" {
+    default = "A"
+}
+variable "skey" {
+    default = "q"
+}
+variable "pkey" {
+    default = "Linux-Singapore-Keypair-2024"
+}
+:wq
+===================================================================
+Step:3. Create “provider.tf”
+
+##===============provide information of target cloud============
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+##============== provide aws cloud authentication and region info==================
+# Configure the AWS Provider
+provider "aws" {
+  region = "${var.AWS_REGION}"
+  access_key = "${var.akey}"
+  secret_key = "${var.skey}"
+}
+:wq
+=========================================================================
+Step:4. create main.tf
+
+#vim  main.tf
+
+## 1. Create vpc =======================================
+resource "aws_vpc" "dev-vpc" {
+  cidr_block = "10.0.0.0/16"
+  tags = {
+    Name = "dev-vpc"
+  }
+}
+##Create Subnet =========================================
+resource "aws_subnet" "dev-subnet" {
+  vpc_id            = aws_vpc.dev-vpc.id
+  cidr_block        = "10.0.1.0/24"
+  map_public_ip_on_launch = "true"
+  availability_zone = "${var.az}"
+  tags = {
+    Name = "dev-subnet"
+  }
+}
+## create igw ============================================
+resource "aws_internet_gateway" "dev-igw" {
+  vpc_id = aws_vpc.dev-vpc.id
+  tags = {
+        Name = "dev-igw"
+    }
+}
+##Create Custom Route Table ========================================
+resource "aws_route_table" "dev-route-table" {
+  vpc_id = aws_vpc.dev-vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.dev-igw.id
+  }
+
+  route {
+    ipv6_cidr_block = "::/0"
+    gateway_id      = aws_internet_gateway.dev-igw.id
+  }
+
+  tags = {
+    Name = "dev-route-table"
+  }
+}
+##Associate subnet with Route Table ======================================
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.dev-subnet.id
+  route_table_id = aws_route_table.dev-route-table.id
+}
+## Create Security Group =====================================================
+resource "aws_security_group" "allow-web" {
+  name        = "allow_web_traffic"
+  description = "Allow Web inbound traffic"
+  vpc_id      = aws_vpc.dev-vpc.id
+
+  ingress {
+    description = "HTTPS"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+      }
+  ingress {
+    description = "custom"
+    from_port   = 81
+    to_port     = 81
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+      }
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "allow-web"
+  }
+}
+## Create Apache web server ======================================================================
+resource "aws_instance" "apache-server" {
+  ami               = "${var.AWS_AMI}"
+  instance_type     = "t2.micro"
+  vpc_security_group_ids =[aws_security_group.allow-web.id]
+  subnet_id              = aws_subnet.dev-subnet.id
+  monitoring             = false
+  key_name          = "${var.pkey}"
+  user_data = file("${path.module}/apache.sh")
+  tags = {
+    Name = "apache-server"
+  }
+}
+:wq
+=========================================================================
+Step5: create apache.sh script file
+#!/bin/bash
+yum update -y
+yum install httpd wget unzip -y
+systemctl start httpd
+systemctl enable httpd
+wget https://www.free-css.com/assets/files/free-css-templates/download/page295/guarder.zip
+unzip guarder.zip
+cp -rvf guarder-html/* /var/www/html/
+:wq
+
+=========================================================================
+Step6: run project
+
+#terraform  init
+#terraform  plan
+#terraform  apply

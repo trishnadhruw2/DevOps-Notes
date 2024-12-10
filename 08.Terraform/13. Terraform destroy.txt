@@ -1,0 +1,32 @@
+Destroying Resources With Terraform
+============================================================================
+terraform destroy - 
+allows us to destroy all resources created within the folder.
+---------------------------------------------------------------------------------------------
+But what if I don't want to destroy all resources? 
+
+Currently I have the EC2 Instance I created as well as a GitHub Repo. terraform destroy will just destroy both of these.
+Let's say I only want to destroy the EC2 Instance.
+In this case we can make use of a "target flag" to direct Terraform on what resources to destroy:
+
+#terraform destroy -target aws_instance.my_ec2
+-----------------------------------------------------------------------------------
+The target option can be used to focus Terraform's attention on only a subset of resources. You use a combination of Resource Type + Local Resource Name.
+
+
+Resource Type - An unchangeable resource type used by Terraform that refers to a specific resource type for a provider
+Local Resource Name - The name you give to the resource you create, it is a custom value and can be anything you want. Do note this name only applies locally within your terraform code as a reference, it is not the name given to the resource itself. 
+
+So when using terraform destroy -target aws_instance.my_ec2  - the "aws_instance.my_ec2" at the end tells Terraform exactly what resource to destroy. The syntax being "resource_type.local_resource_name".
+
+When we run the destroy command with the target flag. Terraform will let us know it is specifically going to destroy only the resources we flagged:
+
+Next we say "yes" please do destroy this.
+
+It will run the destroy which may take a minute. Now if we check AWS there will no longer be an instance running. It's that easy!
+
+It is important to note that while we have destroyed this resource we have not removed the code to create the aws_instance from our first_ec2.tf  config file. 
+Due to this if we now ran terraform plan again then Terraform will plan to create the aws_instance we just destroyed again. 
+
+If you don't want this to be the case then you can remove the code creating the aws_instance from the config file entirely or you could just comment it out. 
+

@@ -1,0 +1,57 @@
+
+#mkdir /terraform/iampro2/
+#cd /terraform/iampro2/
+
+################################ Provider #############################
+#vim provider.tf
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
+provider "aws" {
+  region = "${var.AWS_REGION}"
+  access_key = "${var.akey}"
+  secret_key = "${var.skey}"
+}
+
+################################ Variable #############################
+#vim vars.tf
+
+variable "AWS_REGION" {
+        default = "ap-southeast-1"
+}
+variable "AWS_AMI" {
+    default = "ami-063e1495af50e6fd5"
+}
+variable "akey" {
+    default = ""
+}
+variable "skey" {
+    default = ""
+}
+variable "user_names" {
+  description = "Create IAM users with these names"
+  type        = list(string)
+  default     = ["neo", "trinity", "morpheus"]
+}
+
+################################ Output #############################
+#vim output.tf
+
+output "all_arns" {
+  value       = aws_iam_user.example[*].arn
+  description = "The ARNs for all users"
+}
+
+################################ main.tf #############################
+#vim main.tf
+
+resource "aws_iam_user" "example" {
+  count = length(var.user_names)
+  name  = var.user_names[count.index]
+}

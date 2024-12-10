@@ -1,0 +1,10 @@
+---
+ - name: check joining token of worker
+   hosts: master
+   tasks:
+     - name: check joining token
+       command: docker  swarm  join-token  worker
+       register: t
+     - name: display token
+       debug:
+         msg: "{{ t }}"

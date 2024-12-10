@@ -1,0 +1,70 @@
+Create EC2 Instance using terraform
+
+=========================================================================
+Step1: check terraform version
+
+#rpm   -q   terraform
+#terraform  -v
+---------------------------------------------------------------------------
+Step2: Create project directory
+
+#mkdir  /terraform
+#cd   /terraform
+#mkdir   ec2pro
+#cd  ec2pro
+---------------------------------------------------------------------------
+Step3: create terraform program
+
+#vim  aws_ec2.tf
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+provider "aws" {
+  region     = "ap-southeast-1"
+  access_key = ""
+  secret_key = ""
+}
+resource "aws_instance" "amazon-linux" {
+  ami               = "ami-0f935a2ecd3a7bd5c"
+  instance_type     = "t2.micro"
+  vpc_security_group_ids =["sg-05bd7f3f5df0d7feb"]
+  subnet_id              = "subnet-074d1c73a341f87e3"
+  monitoring             = false
+  key_name          = "Linux-Singapore-Keypair-2024"
+#  user_data = file("${path.module}/apache.sh")
+  tags = {
+    Name = "Amazon-Linux-Server"
+  }
+}
+
+:wq
+
+#ls
+run following command for download aws plugins
+==============================================================
+#terraform init
+#terraform validate
+#terraform plan
+#terraform apply
+==================================================================================================================
+terraform init
+
+terraform init to tell Terraform to scan the code, figure out which providers you’re using, and download the code for them. By default, the provider code will be downloaded into a .terraform folder.
+
+
+terraform validate
+This will come back with errors if there are any invalid declarations otherwise it will give us a success message.
+
+terraform plan
+The plan command lets you see what Terraform will do before actually making any changes. This is a great way to sanity-check your code before unleashing it onto the world.
+
+terraform apply
+when you run the apply command), and it can show you a diff between what’s currently deployed and what’s in your Terraform code.
+
+
