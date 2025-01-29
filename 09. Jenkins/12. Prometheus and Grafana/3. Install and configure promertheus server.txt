@@ -1,0 +1,86 @@
+How to Install Prometheus on Amazon Linux 2 (CentOS, RedHat, Amazon Linux 2023)
+
+==================================================================================================
+Create a system user for Prometheus using below commands:
+#sudo hostnamectl set-hostname prometheus
+#sudo timedatectl  set-timezone  Asia/Kolkata
+#sudo su
+#sudo useradd --no-create-home --shell /bin/false prometheus
+------------------------------------------------------------------------------------------------------
+Create the directories in which we will be storing our configuration files and libraries with this commands:
+
+#sudo mkdir /etc/prometheus
+#sudo mkdir /var/lib/prometheus
+------------------------------------------------------------------------------------------------------
+Set the ownership of the /var/lib/prometheus directory with below command:
+#sudo chown prometheus:prometheus /var/lib/prometheus
+#sudo chown prometheus:prometheus /etc/prometheus
+------------------------------------------------------------------------------------------------------
+You need to inside /tmp :
+#cd /tmp/
+
+Download prometheus using wget using below command, if you want download latest prometheus then visit prometheus download page
+#wget https://github.com/prometheus/prometheus/releases/download/v3.1.0-rc.0/prometheus-3.1.0-rc.0.linux-amd64.tar.gz
+------------------------------------------------------------------------------------------------------
+Extract the files using tar :
+#tar -xvzf prometheus-3.1.0-rc.0.linux-amd64.tar.gz
+------------------------------------------------------------------------------------------------------
+You need to inside prometheus-2.31.1.linux-amd64 so run the below command:
+# cd prometheus-3.1.0-rc.0.linux-amd64/
+------------------------------------------------------------------------------------------------------
+Move the configuration file and set the owner to the prometheus user:
+#sudo mv console* /etc/prometheus
+#sudo mv prometheus.yml /etc/prometheus
+#sudo chown -R prometheus:prometheus /etc/prometheus
+------------------------------------------------------------------------------------------------------
+Move the binaries and set the owner:
+
+#sudo mv prometheus /usr/local/bin/
+#sudo chown prometheus:prometheus /usr/local/bin/prometheus
+------------------------------------------------------------------------------------------------------
+Create the prometheus service file using below command:
+
+Add the below line in this /etc/systemd/system/prometheus.service
+
+#vim   /etc/systemd/system/prometheus.service
+
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \
+    --config.file /etc/prometheus/prometheus.yml \
+    --storage.tsdb.path /var/lib/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries
+
+[Install]
+WantedBy=multi-user.target
+
+:wq
+------------------------------------------------------------------------------------------------------
+Reload systemd using below command:
+#sudo systemctl daemon-reload
+------------------------------------------------------------------------------------------------------
+Enable Prometheus service using below commands:
+#sudo systemctl enable prometheus
+------------------------------------------------------------------------------------------------------
+Start Prometheus service and check status using below commands:
+#sudo systemctl start prometheus
+#sudo systemctl status prometheus
+------------------------------------------------------------------------------------------------------
+Use below command to enable prometheus service in firewall or AWS security group.
+#sudo firewall-cmd --add-service=prometheus --permanent
+#sudo firewall-cmd --reload
+------------------------------------------------------------------------------------------------------
+Now Prometheus service is ready to run and we can access it from any web browser.
+
+http://server-IP-or-Hostname:9090
+
+
+==============================================================================================================

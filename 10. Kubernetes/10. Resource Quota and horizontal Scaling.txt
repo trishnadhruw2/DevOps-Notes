@@ -1,0 +1,176 @@
+Resource Quota
+provides constraints that limit aggregate resource consumption
+
+Default Range
+CPU:
+ 	request(min) - 0.5
+	limit (max)  - 1
+
+Memory:
+ 	request(min) - 500M
+	limit (max)  - 1G
+
+================================================================================================
+Limit Number of CPU's:
+
+vim cpu.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: default-cpu-demo-2
+spec:
+  containers:
+  - name: default-cpu-demo-2-ctr
+    image: nginx
+    resources:
+      limits:
+        cpu: "1"
+:wq
+
+#kubectl apply -f cpu.yml
+#kubectl get pods
+#kubectl describe pod default-cpu-demo-2
+#kubectl delete -f cpu.yml
+=================================================================================================
+Limit CPU Usage:
+
+#vim cpu1.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: default-cpu-demo-3
+spec:
+  containers:
+  - name: default-cpu-demo-3-ctr
+    image: nginx
+    resources:
+      requests:
+        cpu: "0.75"
+:wq
+#kubectl apply -f cpu1.yml
+#kubectl get pods
+#kubectl describe pod default-cpu-demo-3
+#kubectl delete -f cpu1.yml
+=================================MEMDEFAULT.YML========================================
+Limit Memory (min-max) Usage:
+
+#vim memdefault.yml
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-min-max-demo-lr
+spec:
+  limits:
+  - max:
+      memory: 1Gi
+    min:
+      memory: 500Mi
+    type: Container
+
+:wq
+#kubectl apply -f memdefault.yml
+#kubectl get pods
+#kubectl describe pod default-cpu-demo-3
+#kubectl delete -f memdefault.yml
+==========
+#vim mem1.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: constraints-mem-demo
+spec:
+  containers:
+  - name: constraints-mem-demo-ctr
+    image: nginx
+    resources:
+      limits:
+        memory: "800Mi"
+      requests:
+        memory: "600Mi"
+:wq
+#kubectl apply -f mem1.yml
+#kubectl get pods
+#kubectl describe pod constraints-mem-demo
+#kubectl delete -f mem1.yml
+
+
+Horizontal Pod Autoscaler(HPA):
+Kubernetes has the posibility to automatically scale pods base of observed cpu utilization, which is horizontal pod autoscaling.
+scaling can be done only for scalable objects like controller, deployment or Replica set.
+HPA is implemented as a kubernetes API resources and a controller.
+the controller periodically ajust the number of replicas in a replication.
+Controller or deployment to match the observed average cpu utilization to the target spcified by user.
+The HPA is implemented as a controlled loop with a period controlled by the controller managers-horizontal-pod-autoscalling-sync-period flag (default value of 30 sec).
+during each period, the controller manager queries the resources utilization against the metrics specified in each horizontal pod autoscaler definition.
+for per-pod resource metric (like cpu), the controller fetches the metric from the resources metrics API for each pod targeted by the HorizontalPodAutoscaler.
+then if target utilization value is set, the controller calculates the utilization value as a percentage of the equivalent resource request on the containers in each pod.
+if a target raw-value is set, the raw metric values are used directly. the controller then take the means of the utilization of the raw value accross all targeted pods and produces a ration used to scale the number of desired relicas.
+
+
+
+- If request is not specified & limit is given, then request = limit
+=================
+#wget -O metricserver.yml https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+#ls
+#vim metricserver.yml
+
+go to line no (appro 137) add one more arg
+- --kubelet-insecure-tls
+:wq
+#kubectl apply  -f metricserver.yml
+--------------------------------------
+
+
+--------------
+#vim deployhpa.yml 
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+   name: mydeploy
+spec:
+   replicas: 1
+   selector:
+    matchLabels:
+     name: deployment
+   template:
+     metadata:
+       name: testpod8
+       labels:
+         name: deployment
+     spec:
+      containers:
+        - name: c00
+          image: httpd
+          ports:
+          - containerPort: 80
+          resources:
+            limits:
+              cpu: 500m
+            requests:
+              cpu: 200m
+:wq
+#kubectl apply -f deployhpa.yml
+#kubectl get pods
+#kubectl get all
+
+#watch kubectl get all
+---------------------
+#kubectl autoscale deployment mydeploy --cpu-percent=20 --min=1 --max=10
+--------------
+#kubectl get all
+
+For view autoscaling lively open new one session of putty 
+#kubectl get pods
+#kubectl exec mydeploy-63rrek  -it  -c c00 -- /bin/bash
+provide tasks here to increase the load in container
+ #apt-get update -y
+ #apt-get update -y
+ #apt-get update -y
+ #apt-get install stress -y
+
+view watch terminal it create mode container if load increases.

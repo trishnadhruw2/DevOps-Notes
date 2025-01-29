@@ -1,0 +1,87 @@
+Steps For Maven (AMI Linux 2)
+
+ =============================================================================
+Install jdk
+#yum install java-1.8* -y
+
+install maven
+#yum install maven -y
+
+install git
+#yum install git -y
+
+
+download tomcat from official site
+https://tomcat.apache.org/download-90.cgi#9.0.76
+
+copy link address of "core - zip (pgp,sha512)"
+
+#wget https://downloads.apache.org/tomcat/tomcat-9/v9.0.76/bin/apache-tomcat-9.0.76.zip
+
+#unzip apache-tomcat-9.0.76.zip
+
+#cd apache-tomcat-9.0.76/
+#ls
+#cd conf
+#ls
+#vim tomcat-users.xml
+Add below lines before closing with </tomcat-users>
+
+<role rolename="admin-gui"/>
+<role rolename="manager-gui"/>
+<user username="admin" password="111" fullName="Administrator" roles="admin-gui,admin-gui,manager-gui,manager-script"/>
+
+:wq
+
+#cd 
+#cd apache-tomcat-9.0.76/
+#cd webapps/manager/META-INF
+#vim context.xml
+
+remove two line of <valve classname=.......................0:0:1" /> line number 21 & 22
+
+:wq
+
+#cd /root/apache-tomcat-9.0.76/bin/
+#ls  -ld *
+#chmod  u+x  *.sh
+#ls  -ld *
+#sh startup.sh
+
+Step7:
+Open browser - "https://github.com/hackwithabhi1/git-tag" code - Download Zip (right click) - copy link address.
+
+#cd
+#wget https://github.com/hackwithabhi1/git-tag/archive/refs/heads/master.zip
+#ls
+
+#unzip master.zip 
+#cd git-tag-master/src/main/webapp
+#ls
+
+#cd /root/git-tag-master/ 
+#mvn --version
+
+#cd /usr/share/maven/
+
+#mvn validate          	        ( it validate code)
+#mvn  compile			(  it compile code )
+#mvn test			( it test code )
+#mvn package			( it generate jar/war/ear file - target directory will be generated)
+
+#ls
+#cd target
+#ls
+
+#cp SimpleTomcatWebApp.war  /root/apache-tomcat-9.0.76/webapps/
+
+Open Web browser
+
+http://192.168.0.103:8080/
+
+login as admin password 111
+
+http://192.168.0.103:8080/SimpleTomcatWebApp/
+
+
+

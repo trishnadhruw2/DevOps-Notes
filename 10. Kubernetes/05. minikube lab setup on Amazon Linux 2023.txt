@@ -1,0 +1,52 @@
+Steps for install minikube on Amazon Linux 2/2023:
+======================================================================================
+Step1: Hardware Requirement 
+Hard Disk Free Space = 20 GB Plus Free Space
+CPU		 = 2 core vcpu
+RAM		 = 2.2 GB Free Space
+Swap Should be Disable.
+
+Verify disk space,ram,cpu etc
+$df -h
+$free -m
+$lscpu
+------------------------------------------------------------------------------------
+Step2: Set hostname and date/time
+
+$sudo hostnamectl set-hostname master
+$sudo timedatectl  set-timezone Asia/Kolkata
+$hostname
+$date
+------------------------------------------------------------------------------------
+Step3: Install and start/enable docker
+
+$sudo  su
+#yum update  -y
+#yum install docker -y
+#systemctl start docker
+#systemctl enable docker
+#systemctl status docker
+------------------------------------------------------------------------------------
+Step4: Download and install minikube
+
+#curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-latest.x86_64.rpm
+# ls
+#sudo rpm -Uvh minikube-latest.x86_64.rpm
+# minikube version
+------------------------------------------------------------------------------------
+Step5: Download and install  kubectl
+
+#curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+#cp -rvf kubectl /usr/bin/
+#chmod 755 /usr/bin/kubectl
+#kubectl  version
+------------------------------------------------------------------------------------
+Step6: Start and verify minkube status and cluster
+
+#minikube start   --force
+------------------------------------------------------------------------------------
+Step7: check minikube status
+
+#minikube status
+#kubectl config view
+====================================================================================

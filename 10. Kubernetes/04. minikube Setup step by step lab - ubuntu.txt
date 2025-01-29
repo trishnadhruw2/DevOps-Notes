@@ -1,0 +1,146 @@
+Introduction:
+
+Minikube is an open source tool that allows you to set up a single-node Kubernetes cluster on your local machine. The cluster is run inside a virtual machine and includes Docker, allowing you to run containers inside the node.
+
+This is an excellent way to test in a Kubernetes environment locally, without using up too much resources
+
+========================================================================================
+System Requirement: For Minikube (OS=Ubuntu Server 22.04 LTS -in VM)
+------------------------------------------------------------------
+Minimum system requirements for minikube
+2 GB Plus RAM or more (2.2GB Free RAM)
+2 CPU / vCPU or more
+20 GB free hard disk space or more
+Docker / Virtual Machine Manager – KVM & VirtualBox
+=========================================================================================
+Step0: Install ubuntu in VM:
+
+1. Download ubuntu server iso file:
+https://ubuntu.com/download/server 
+or
+https://ubuntu.com/download/server
+(Download Ubuntu Server 22.04.1 LTS) 
+
+2. Install download ubuntu in VM
+====================================================================================================
+Step1: Allow ssh root access
+-----------------------------------------------------
+For all access this server with putty allow ssh access to root
+
+set password to root and login as root
+
+$sudo passwd root
+111
+111
+#su root
+---------------------------------------------------------------------------------------------------
+Update ssh configuration:
+
+#vim /etc/ssh/sshd_config
+PermitRootLogin yes ( line 33 )
+PasswordAthentication yes ( line 57 remove #)
+:wq
+
+#systemctl restart sshd
+
+Now we can access VM with putty (VM network should be on Bridge)
+
+=====================================================================================================
+Step2: set hostnames and update hosts file records
+-------------------------------------------------
+Update/upgrade packages:
+
+#apt-get update -y
+
+
+Install net-tools ( hostnamectl or ifconfig command will be work )
+
+#apt-get install net-tools -y
+
+#hostnamectl set-hostname master
+#hostname
+
+#timedatectl set-timezone Asia/Kolkata
+#date
+=====================================================================================================
+Step3: Disable SWAP 
+-------------------------------------------------------- 
+#free -m
+#swapoff -a
+#sudo vim /etc/fstab
+add # comment to swap entry line
+:wq
+
+#reboot
+
+Note: Take Snapshot "Ready to Kube Setup"
+=====================================================================================================
+Step4. Install, start & enable docker
+---------------------------------------------------------
+#apt-get update -y
+#apt-get install docker.io -y
+#systemctl start docker
+#systemctl enable docker
+#docker --version
+
+====================================================================================================
+Step 5: Install Minikube
+With VirtualBox set up, move on to installing Minikube on your Ubuntu system.
+
+1. download the latest Minikube binary using the wget command:
+
+#apt-get update -y
+#apt install -y curl wget apt-transport-https
+#wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+or
+#curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+
+2. Copy the downloaded file and store it into the /usr/local/bin/minikube directory with:
+
+#cp -rvf minikube-linux-amd64 /usr/local/bin/minikube
+
+3. Next, give the file executive permission using the chmod command:
+
+#chmod 755 /usr/local/bin/minikube
+
+4. Finally, verify you have successfully installed Minikube by checking the version of the software:
+
+#minikube version
+=====================================================================================================
+Step 6: Install Kubectl
+To deploy and manage clusters, you need to install kubectl, the official command line tool for Kubernetes.
+
+1. Download kubectl with the following command:
+
+#curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+
+2. copy kubectl into usr
+#cp -rvf kubectl /usr/bin/
+
+3. Make the binary executable by typing:
+#chmod 755 /usr/bin/kubectl
+
+
+4. Now verify the kubectl version
+#kubectl version -o yaml
+#which kubectl
+#kubectl version
+
+=====================================================================================================
+Step7: start minikube
+Once you have set up all the required software, you are ready to start Minikube.
+
+#minikube start --driver=docker 
+or
+#minikube start --driver=docker  --force
+#minikube status
+
+Note:
+Above command show warning due to we run it using root user, so we need run minikube forcefully as a root
+
+#minikube start --force
+#minikube status
+=====================================================================================================
+Minikube Lab Setup on Ubuntu 22.04.1 Ready for Practice.

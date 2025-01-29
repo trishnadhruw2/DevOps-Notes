@@ -1,0 +1,135 @@
+Steps for Install and configure Tomact in AMI Linux2
+======================================================================================================
+
+1. Install java
+#sudo amazon-linux-extras install java-openjdk11 -y
+#java -version
+
+2. Create tomcat user and group
+#sudo groupadd --system tomcat
+#sudo useradd -d /usr/share/tomcat -r -s /bin/false -g tomcat tomcat
+
+3. Install Tomcat 9 on Amazon Linux 2
+#wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.63/bin/apache-tomcat-9.0.63.tar.gz
+
+Use tar command line tool to extract downloaded archive.
+#tar -xvzf apache-tomcat-9.0.63.tar.gz -C /usr/share/
+
+Create Symlink to the folder /usr/share/tomcat. This is for easy updates.
+#ln -s /usr/share/apache-tomcat-9.0.63/ /usr/share/tomcat
+
+Update folder permissions
+#sudo chown -R tomcat:tomcat /usr/share/tomcat
+#sudo chown -R tomcat:tomcat /usr/share/apache-tomcat-9.0.63/
+
+
+Create Tomcat Systemd service
+
+#sudo tee /etc/systemd/system/tomcat.service<<EOF
+[Unit]
+Description=Tomcat Server
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=tomcat
+Group=tomcat
+
+Environment=JAVA_HOME=/usr/lib/jvm/jre
+Environment='JAVA_OPTS=-Djava.awt.headless=true'
+Environment=CATALINA_HOME=/usr/share/tomcat
+Environment=CATALINA_BASE=/usr/share/tomcat
+Environment=CATALINA_PID=/usr/share/tomcat/temp/tomcat.pid
+Environment='CATALINA_OPTS=-Xms512M -Xmx1024M'
+ExecStart=/usr/share/tomcat/bin/catalina.sh start
+ExecStop=/usr/share/tomcat/bin/catalina.sh stop
+
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+Enable and start tomcat service:
+
+#sudo systemctl daemon-reload
+#sudo systemctl start tomcat
+#sudo systemctl enable tomcat
+#sudo systemctl status tomcat
+
+Allow Tomcat TCP port 8080 if you have firewalld service enabled.
+#sudo firewall-cmd --permanent --add-port=8080/tcp
+#sudo firewall-cmd --reload
+
+4. Configure Tomcat Authentication
+We have to edit Tomcat configuration file to enable Admin and Manager UI roles.
+
+#sudo vim /usr/share/tomcat/conf/tomcat-users.xml
+Add below lines before closing with </tomcat-users>
+
+<role rolename="admin-gui"/>
+<role rolename="manager-gui"/>
+<user username="admin" password="111" fullName="Administrator" roles="admin-gui,manager-gui"/>
+
+
+Configure Apache web server as a proxy for Tomcat server. First install httpd package.
+
+#sudo yum -y install httpd 
+
+Create VirtualHost file for Tomcat Admin web interface:
+
+# sudo vim /etc/httpd/conf.d/tomcat_manager.conf
+<VirtualHost *:80>
+    ServerAdmin root@localhost
+    ServerName tomcat.example.com
+    DefaultType text/html
+    ProxyRequests off
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:8080/
+    ProxyPassReverse / http://localhost:8080/
+</VirtualHost>
+
+<VirtualHost *:80>
+  ServerName ajp.example.com
+
+  ProxyRequests Off
+  ProxyPass / ajp://localhost:8009/
+  ProxyPassReverse / ajp://localhost:8009/
+</VirtualHost>
+
+:wq
+
+If SELinux is enabled run the following commands:
+
+#sudo setsebool -P httpd_can_network_connect 1
+#sudo setsebool -P httpd_can_network_relay 1
+#sudo setsebool -P httpd_graceful_shutdown 1
+#sudo setsebool -P nis_enabled 1
+
+Restart httpd service:
+
+#sudo systemctl restart httpd
+#sudo systemctl enable httpd
+#sudo systemctl status httpd
+
+
+Open Web Browser and open address
+http://192.168.0.50
+
+username: admin	
+password: 111
+
+5. Open terminal
+#cd /usr/share/tomcat/
+#ls
+#cd webapps
+
+
+Download jenkins war file
+#wget https://get.jenkins.io/war-stable/2.332.3/jenkins.war
+
+#systemctl restart tomcat
+Open Web Browser and open address
+http://192.168.0.50/jenkins
+
+=================================================================================================

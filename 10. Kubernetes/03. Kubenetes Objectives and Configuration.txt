@@ -1,0 +1,72 @@
+Kubernetes objects:
+-	Kubernetes use objects to represent the state of your cluster
+-	What containerized applications are running and on which nodes
+-	The policies around how those application behave, such as restart policies, upgrades and fault tolerance.
+-	One you create the object, the kubernetes system will constantly work to ensure that object exist and maintains clusters desired state.
+-	Every kubernetes object include two nested fields that govern the object config the object spec and the object status.
+-	The spec, which we provide, describes your desired state for the object the characteristics that you want the object to have.
+-	The status describe the actual state of the object and is supplied and updated by the kubernetes system.
+-	All objects are identified by a unique name and a UID.
+
+The Basic Kubernetes objects include:
+1.	Pod 
+2.	Service
+3.	Volume
+4.	Namespace
+5.	Replicasets
+6.	Secrets
+7.	ConfigMaps
+8.	Deployments
+9.	Jobs
+10.	Daemonsets
+
+Manifest - yml formate.
+
+Relationship between these objects:
+Pod Manages containers
+Replicasets manage pods
+Service expose pod processes to the outside world
+Configmaps and secrets helps you configure pods.
+
+kubernetes Object:
+It represents as JSON or YAML files
+You can create these and then push then to the kubernetes API with kubectl
+
+State of the object
+-	Replicas (2/2) - startup
+-	Image (tomcat/Ubuntu)
+-	Name
+-	Port 
+-	Volume
+
+Kubernetes objects Management
+The kubectl command line tools supports several different whays to create and manage kubernetes object
+
+
+Management Techniques	Operates on	Recommended Environment
+Imperative commands	Live objects	Development projects
+Declarative object configuration 	Individual file (yml/json)	production
+
+Declarative is about describing what you are trying to achieve, without instructing how to do it.
+Imperative, explicitly tells how to accomplish it.
+
+Fundamental of Pods:
+-	When a pod gets created, it is scheduled to run on a node in your cluster
+-	The pod remains on that node until the process is terminated, the pod object is deleted, the pod is evicted for lack of resources, or the node fails
+-	If a pod is scheduled to a node that fails, or if the scheduling operation itself fails, the pod is deleted
+-	If a node dies, the pods scheduled to that node one are scheduled for deletion after a timeout period
+-	A given pod (UID) is not "rescheduled" to a new node, instead it will be replaced by an identical pod, with even the same name if desired, but with a new UID.
+-	Volume in a pod will exists as long as that pod (With that UID) exit if that pod is deleted for any reason, volume is also destroyed and created as new an new pod
+-	A controller can create and manage multiple pods, handling replication, rollout and providing self-healing capabilities.
+======================================================================================================
+Kubernet configuration:
+
+All-in-one single node installation
+-With all-in-one, all he master and worker components are installed on a single node. This is very useful for learning, development and testing. This type should not be used in production. Minikube is one such example, and we are going to explore it soon.
+
+Single-Master and Multi-worker installation
+-	In this setup, we have a single master node, which also runs a single-node etcd instance. Multiple worker nodes are connected to the master node
+
+Multi- master and Multi-worker installation
+-	In this setup, we have multiple master nodes, which works in an HA mode, but we have a single-node etcd instance. Multiple worker nodes are connected to the Master node.
+

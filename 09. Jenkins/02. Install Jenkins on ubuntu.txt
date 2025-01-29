@@ -1,0 +1,53 @@
+Install Jenkins on Ubuntu 22.4 / 24.04
+===================================================================================
+1.  set hostname and timedate
+$sudo hostnamectl  set-hostname   jenkins
+$sudo timedatectl  set-timezone Asia/Kolkata
+$sudo su
+---------------------------------------------------------------------------------------------------
+2. update package/repo
+$apt-get update -y
+---------------------------------------------------------------------------------------------------
+3. install java 17
+#apt install fontconfig openjdk-17-jre
+#java -version
+---------------------------------------------------------------------------------------------------
+4. add jenkins repository
+#wget -O /usr/share/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian/jenkins.io-2023.key
+
+#echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+---------------------------------------------------------------------------------------------------
+5. Install jenkins
+#apt-get update  -y
+#apt-get install jenkins  -y
+---------------------------------------------------------------------------------------------------
+6. start and enable jenkins service
+#systemctl start jenkins
+#systemctl enable jenkins
+#systemctl status jenkins
+---------------------------------------------------------------------------------------------------
+7. Open browser and type jenkins server ip
+http://35.154.206.100:8080
+---------------------------------------------------------------------------------------------------
+8. now unlock jenkins ( with  initialAdminPassword )
+#cat /var/lib/jenkins/secrets/initialAdminPassword
+
+now it show password copy it,use this password in browser to login
+
+b41e9243fa534e2d893e5f10c63e0e69
+---------------------------------------------------------------------------------------------------
+9. now select "Install suggested plugins"
+---------------------------------------------------------------------------------------------------
+10. set username and password access jenkins in future
+
+username: admin
+password: 111
+
+click on "save and continue" - "save and finish" - "start using jenkins"
+Now dashboard is open
+--------------------------------------------------------------------------------------------------
+
+

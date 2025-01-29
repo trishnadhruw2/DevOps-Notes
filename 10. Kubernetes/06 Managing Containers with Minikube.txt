@@ -1,0 +1,181 @@
+Managing Kubernetes with Minikube
+Common Minikube Commands
+To see the kubectl configuration use the command:
+
+$ kubectl config view
+
+To show the cluster information:
+
+$kubectl cluster-info
+To check running nodes use the following command:
+
+$kubectl get nodes
+
+$kubectl describe node master( name or self ip)
+
+To see a list of all the Minikube pods run:
+
+#kubectl get pod
+================================================================================
+Manifests file:
+Kubernetes uses manifests files in the form of .yaml to create, modify, and delete Kubernetes resources such as pods, deployments, services, etc. 
+
+For create pod
+
+#vim pod1.yml
+kind: Pod                              
+apiVersion: v1                     
+metadata:                           
+  name: testpod                  
+spec:                                    
+  containers:                      
+    - name: c00                     
+      image: ubuntu              
+      command: ["/bin/bash", "-c", "while true; do echo Hello-devops_engineer; sleep 5 ; done"]
+  restartPolicy: Never         # Defaults to Always
+:wq
+
+#kubectl apply -f pod1.yml
+(Note: take time to pull and run image of ubuntu)
+
+To see a list of all the Minikube pods run:
+
+#kubectl get pod
+#kubectl get pods -o wide
+#kubectl describe pod testpod
+
+for go inside container
+#kubectl logs -f testpod -c c00
+
+For delete pod
+#kubectl delete pod testpod
+#kubectl get pod
+
+===============================================================================
+Annotations:
+
+Annotations allow you to add non-identifying metadata to Kubernetes objects. Examples include phone numbers of persons responsible for the object or tool information for debugging purposes. In short, annotations can hold any kind of information that is useful and can provide context to DevOps teams.
+eg.
+
+#vim pod1.yml
+kind: Pod                              
+apiVersion: v1                     
+metadata:                           
+  name: testpod
+  annotations:
+     description: contat me at ajay@gmail.com                
+spec:                                    
+  containers:                      
+    - name: c00                     
+      image: ubuntu              
+      command: ["/bin/bash", "-c", "while true; do echo Hello-devop_engineer; sleep 5 ; done"]
+  restartPolicy: Never         # Defaults to Always
+:wq
+
+#kubectl apply -f pod1.yml
+
+for check annotation
+#kubectl describe pod1 testpod
+
+For delete pod
+#kubectl delete pod testpod
+#kubectl get pod
+=============================================================================
+MULTI CONTAINER POD ENVIRONMENT 
+
+#vim pod2.yml
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpod3
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo sevenmentor pune; sleep 5 ; done"]
+    - name: c01
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo Hello-devops engineers; sleep 5 ; done"]
+
+:wq
+#kubectl apply -f pod2.yml
+
+#kubectl describe pod testpod3
+
+for show container details:
+#kubectl logs -f testpod3 c00 
+#kubectl logs -f testpod3 c01
+
+execute command inside container
+#kubectl exec testpod3 -c c00 -- hostname -i
+#kubectl exec testpod3 -c c01 -- hostname -i
+
+Go inside into pod testpod3:
+
+#kubectl exec testpod3 -it -c c01 -- /bin/bash
+	#ps
+	#ps -ef
+	#cat /etc/os-release
+	#exit
+
+for delete container
+#kubectl delete pod testpod3  
+or 
+we can delete pod with manifest file name
+#kubectl delete -f pod2.yml
+#kubectl get pods
+
+try to create 5 container same like above.
+=============================================================================
+POD ENVIRONMENT  VARIABLES:
+When you create a Pod, you can set environment variables for the containers that run in the Pod. To set environment variables, include the env or envFrom field in the configuration file.
+
+
+#vim pod4.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: environments
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo SevenMentor pune; sleep 5 ; done"]
+      env:                        # List of environment variables to be used inside the pod
+      - name: MYNAME
+        value: devopsengg
+:wq
+
+#kubectl apply -f pod4.yml
+#kubectl get pods
+#kubectl exec environments -it -- /bin/bash
+	#env
+	#echo $MYNAME
+	#exit
+
+delete pod manifest
+#kubectl delete -f pod4.yml
+=============================================================================
+POD WITH PORTS
+#vim pod5.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpod4
+spec:
+  containers:
+    - name: c00
+      image: httpd
+      ports:
+       - containerPort: 80
+:wq
+#kubectl apply -f pod5.yml
+#kubectl get pods
+#kubectl get pods -o wide
+#curl 172.17.0.3:80
+#kubectl delete -f pod5.yml
+
+here, container running in same pod can visit website default page using "curl localhost" address
+==============================================================================================

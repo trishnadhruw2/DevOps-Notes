@@ -1,0 +1,58 @@
+what is CI/CD [Continous Integration|Continious Delivery/Deployment]:
+=====================================================================
+CI/CD not a tool,its methodology to complete SDLC.
+
+Before CICD - Developers push code in github,after that tester integrate all code & check all developers codes - finally test code it will work or not properly.
+
+if code not work? - it time wastage for all ( caught bug in code )
+
+to resolve this issue launch CI,
+
+Developer push code after develop small-small code, that small code auto push on CI server which build, test and deploy code, if code not work then CI server notify developer code is right or not to work,code not work then notify developer,developer modify it and again push, CI server again process on it and notify status of code to developer.
+--------------------------------------------------------------------------------------------
+Continuous Integration= continuos Build + Continuous Testing.
+--------------------------------------------------------------------------------------------
+=====================================================================================================================
+
+CI/CD pipline
+
+Developer-version control - build - unit test- deploy test - prod.env Deploy - Measure and validate(QA).
+
+What is Jenkins -
+Jenkins a Continuos Integration Tools, It popularly called Heart Of SDLC and DevOps.
+Compatative of Jenkins- Bamboo,Travis CI,BuildBot.
+
+
+Jenkins is an open-source project written in Java, that run on all platforms like windows, linux/unix, MacOS etc Operating Systems. 
+It is a free, open source community support, it is a first choice tool for CI.
+Jenkins automate the all entire software development life cycle [SDLC]
+Jenkins was originally develop by sun microsystem in 2004, with the name of hudson project.
+Thes project was later renamed Jenkins  when Oracle bought Microsystem.
+It can run on all platform without compatability issue (require java dependency).
+Whenver developer write code,then all code integrate, all that code of all developers and build,test and devliver/deploy to the client, this process is called CI/CD.
+
+Jenkin help us to achive this all process,Becuase of CI,bugs in develop code caught in initial step and remove quickly, so that enhance the whole process of Software Development Life Cycle.
+=====================================================================================================================
+Workflow of Jenkins:
+
+We can attach git, Maven, Selenium and Artifactory plugins to Jenkins.
+
+Once developer put code in git hub, jenkins pull that code and send to Maven for Build.
+Once build  code, jenkins pull that code and send to selenium for the testing.
+Once testing is done, then jenins will pull that code and send to artifactory as per requirement.
+we can also deploy with jenkins
+=====================================================================================================================
+Advantages of Jenkins:
+
+It has lots of plugins available.
+we can write your code own plug-in.
+you can use community plugins.
+jenkins is not a just a tool. it is a framework means we can do whatever we want.all you need is pulugins.
+we can attach  (nodes) to do job. it slaves are not available, jenkins itself does the job.
+Jenkins also behave as a cron server replacement  means can do schedulied task.
+we can create Labels.
+It is very easy to use, available in GUI mode.
+
+Build = compile- code review- code Testing - Intergration Testing - Packaging(jar/war file)
+
+=====================================================================================================================

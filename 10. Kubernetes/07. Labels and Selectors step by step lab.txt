@@ -1,0 +1,196 @@
+Labels:
+Labels are the mechanism you use to organize kubernetes objects.
+A label is a key-value pair without any predefined meaning that can be attached to the objects
+Label are similar to tags in AWS or git when you use a name to Quick Reference
+So you are free to choose labels as you need it to refer an environment which is used for dev or testing or Production, refer a product group like Department Account, Department Marketting
+
+Create manifest file label practice
+=====================================================================================================================
+#vim  pod05.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: delhipod
+  labels:                                                   
+    env: development
+    class: pods
+spec:
+    containers:
+       - name: c00
+         image: ubuntu
+         command: ["/bin/bash", "-c", "while true; do echo Hello-SevenMentor; sleep 5 ; done"]
+:wq
+-------------------------------------------------------------------------------------------------------------
+#kubectl apply -f pod05.yml
+#kubectl get pods
+#kubectl get pods -o wide
+
+for check labels
+#kubectl get pods --show-labels
+
+set label with imparative method
+#kubectl label pods delhipod myname=dengineer
+#kubectl get pods --show-labels
+
+find pod with specific label
+#kubectl get pods -l env=development
+
+find pod with inverse
+#kubectl get pods -l env!=development
+
+delete pod with help of label
+#kubectl delete pod -l env=development
+
+delete pod with inverse( which not have label)
+#kubectl delete pod -l env!=development
+=====================================================================================================================
+NODE SELECTOR EXAMPLE
+
+#vim pod6.yml
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nodelabels
+  labels:
+    env: development
+spec:
+    containers:
+       - name: c00
+         image: ubuntu
+         command: ["/bin/bash", "-c", "while true; do echo SevenMentor; sleep 5 ; done"]
+    nodeSelector:                                         
+       hardware: ssdi5
+:wq
+-------------------------------------------------------------------------------------------------------------
+create or apply pod6
+#kubectl apply -f pod06.yml
+#kubectl get pods
+
+it failure to start pod cause of we don't have any pod with "ssdi5" label
+
+for check details verify
+#kubectl describe pod nodelabels
+
+For set label on node,run any pod and set label
+#kubectl get nodes
+#kubectl apply -f pod2.yml
+#kubectl label nodes minikube hardware=ssdi5
+
+now check label not run or pending
+#kubectl describe pod nodelabels
+#kubectl get pods
+
+now delete pods
+#kubectl delete -f pod2.yml 
+#kubectl delete -f pod6.yml
+
+
+=====================================================================================================================
+Scaling and Replication:
+	Kubernetes was designed to orchestrate multiple containers and replication
+	Need for multiple containers/replication helps us with these
+Reliability -> By having multiple versions of an application, you prevent problems if one or more fails.
+Load Balancing- Having multiple versions of a containers enables you to easily send traffic to different instances to prevent Overloading of a single instances or node
+Scaling – When load does become too much for the number of existing instances, kubernetes enables you to easily scale up your application, adding additional instances as needed
+Rolling updates- Updates to a service by replacing pods one by one
+
+Replication Controller:
+	A replication controller is a object that enables you to easily create multiple pods, then make sure that number of pods always exist
+	If a pod created using RC will be automatically replaced if they does crash failed, or terminated
+	RC is recommended if you just want to make sure 1 pod is always running, even after system reboots
+	You can run the RC with 1 replica & the RC will make sure the pod is always running
+
+EXAMPLE OF REPLICATION CONTROLLER
+
+#vim pod7.yml
+kind: ReplicationController               
+apiVersion: v1
+metadata:
+  name: myreplica
+spec:
+  replicas: 5            
+  selector:        
+    myname: 7mentor                             
+  template:                
+    metadata:
+      name: testpod7
+      labels:            
+        myname: 7mentor
+    spec:
+     containers:
+       - name: c00
+         image: ubuntu
+         command: ["/bin/bash", "-c", "while true; do echo Hello-SevenMentor; sleep 5 ; done"]
+:wq
+-------------------------------------------------------------------------------------------------------------
+#kubectl apply -f pod7.yml
+#kubectl get pods
+
+now it show 5 replica try to delete any pod
+#kubectl delete pod myreplica-12wrkst
+after delete it will start new pod
+#kubectl get pods
+
+for show running replica
+#kubectl get rc
+for show detail replica
+#kubectl describe rc myreplica
+
+show label
+#kubectl get pods --show-labels
+
+for scale up
+#kubectl scale --replicas=8 rc -l myname=7mentor
+#kubectl get pods
+
+for scale down
+#kubectl scale --replicas=1 rc -l myname=7mentor
+#kubectl get pods
+
+For stop(terminate) replication
+#kubectl delete -f pod7.yml
+#kubectl get rc
+=====================================================================================================================
+REPLICA SET:
+	Replica set is a next generation Replication controller
+	The replication controller only supports equality-based selector whereas the replica set supports set-based selector i.e. filtering according to set of values
+	Relicaset rather than the Replication controller is used by other objects like deployment
+
+EXAMPLE OF REPLICA SET
+
+#vim pod8.yml
+
+kind: ReplicaSet                                    
+apiVersion: apps/v1                            
+metadata:
+  name: myrs
+spec:
+  replicas: 2  
+  selector:                  
+    matchExpressions:                             # these must match the labels
+      - {key: myname, operator: In, values: [7mentor, sevenmentor, 7mpune]}
+      - {key: env, operator: NotIn, values: [production]}
+  template:      
+    metadata:
+      name: testpod8
+      labels:              
+        myname: 7mentor
+    spec:
+     containers:
+       - name: c00
+         image: ubuntu
+         command: ["/bin/bash", "-c", "while true; do echo DevOps Trainig SevenMentor; sleep 5 ; done"]
+
+:wq
+-------------------------------------------------------------------------------------------------------------
+#kubectl apply -f pod8.yml
+#kubectl get pods
+#kubectl get rs
+kubectl scale --replicas=5 rs/myrs
+#kubectl scale --replicas=1 rs/myrs
+#kubectl get pods
+#kubectl get rs
+
+#kubectl delete rs/myrs
+#kubectl get pods

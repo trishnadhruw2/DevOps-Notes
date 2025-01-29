@@ -1,0 +1,383 @@
+AWS EKS
+Amazon Elastic Kubernetes Service (Amazon EKS) is a managed service that makes it easy for you to run Kubernetes on AWS without needing to stand up or maintain your own Kubernetes control plane. Kubernetes is an open-source system for automating the deployment, scaling, and management of containerized applications.
+Applications running on Amazon EKS are fully compatible with applications running on any standard Kubernetes environment, whether running in on-premises data centers or public clouds.
+======================================================================================
+Create Kubernetes Server AWS EKS
+======================================================================================
+1. Create EC2 Instance for manage kubernetes cluster
+
+Create EC2 instance of Amazon Linux 2023 Server and access it using putty
+------------------------------------------------------------------------------------------------------------
+2. set hostname to created instanace
+
+$sudo  hostnamectl  set-hostname  eks
+$sudo  su
+or
+#vim /etc/hostname
+eks
+:wq
+reboot
+------------------------------------------------------------------------------------------------------------
+3. Installing kubectl
+
+$ curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.1/2023-04-19/bin/linux/amd64/kubectl
+$ chmod +x ./kubectl 
+$ mv kubectl /usr/local/bin
+$ kubectl version --output=yaml
+
+Reference of aws documentation - 
+https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
+------------------------------------------------------------------------------------------------------------
+4. Installing eksctl
+
+$ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+$ cd /tmp
+$ sudo mv /tmp/eksctl /bin   OR  $ sudo mv /tmp/eksctl /usr/local/bin
+$ eksctl version
+
+Reference of aws documentation - 
+https://github.com/eksctl-io/eksctl/blob/main/README.md#installation
+---------------------------------------------------------------------------------------------------
+5. create iam user (with administrative ) for aws cli access to for manage eks cluster - download access/secreate key
+
+open terminal -
+#aws configure
+provide here, access key,secrete key and region  info
+---------------------------------------------------------------------------------------------------
+6. Setup Kubernetes using eksctl
+
+#eksctl create cluster --name sevenmentor-cluster \
+--region ap-south-1 \
+--node-type t2.small
+$ kubectl get nodes
+
+Reference of aws documentation - 
+https://github.com/aws-samples/eks-workshop/issues/734
+---------------------------------------------------------------------------------------------------
+7.  Create deployment Manifest File
+
+$ vim deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sevenmentor-regapp
+  labels:
+     app: regapp
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: regapp
+
+  template:
+    metadata:
+      labels:
+        app: regapp
+    spec:
+      containers:
+      - name: regapp
+        image: httpd
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+:wq
+
+Reference of aws documentation - 
+https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+-----------------------------------------------------------------------------------------------------------------
+8.  Create Service Manifest File 
+
+$ vim service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sevenmentor-service
+  labels:
+    app: regapp
+spec:
+  selector:
+    app: regapp
+
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer
+:wq
+
+9. run deployment and service
+#kubectl apply -f deployment.yml
+#kubectl  apply  -f service.yml
+
+#kubectl	get  pods
+#kubectl  get   svc
+
+open web browser
+http://a2cac0da54b284b7d91951002e47aa6a-1209225021.ap-south-1.elb.amazonaws.com
+-----------------------------------------------------------------------------------------------------------------
+10. Remove running pods and service
+
+#kubectl delete -f deployment.yml
+#kubectl delete -f service.yml
+#kubectl	get  pods
+#kubectl  get   svc
+-----------------------------------------------------------------------------------------------------------------
+11.  Create deployment Manifest File
+
+$ vim painter.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-web
+  labels:
+     app: painterweb
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: painterweb
+
+  template:
+    metadata:
+      labels:
+        app: painterweb
+    spec:
+      containers:
+      - name: painterweb
+        image: hackwithabhi/painter
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+:wq
+-----------------------------------------------------------------------------------------------------------------
+12.  Create Service Manifest File 
+
+$ vim service1.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sevenmentor-service
+  labels:
+    app: painterweb
+spec:
+  selector:
+    app: painterweb
+
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer
+:wq
+
+13. run deployment and service
+#kubectl apply -f painter.yml
+#kubectl  apply  -f service1.yml
+
+#kubectl	get  pods
+#kubectl  get   svc
+
+open web browser
+http://a2cac0da54b284b7d91951002e47aa6a-1209225021.ap-south-1.elb.amazonaws.com
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+14. Remove running pods and service
+
+#kubectl delete -f painter.yml
+#kubectl delete -f painter.yml
+#kubectl	get  pods
+#kubectl  get   svc
+=====================================================================================================
+15. Create deployment Manifest File
+
+$ vim education.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-web
+  labels:
+     app: eduweb
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eduweb
+
+  template:
+    metadata:
+      labels:
+        app: eduweb
+    spec:
+      containers:
+      - name: eduweb
+        image: hackwithabhi/educationpro
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+:wq
+--------------------------------------------------------------------------------
+15. Create Service Manifest File 
+
+$ vim eduservice.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sevenmentor-service
+  labels:
+    app: eduweb
+spec:
+  selector:
+    app: eduweb
+
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer
+:wq
+
+
+16. run deployment and service
+#kubectl apply -f education.yml
+#kubectl  apply  -f eduservice.yml
+
+#kubectl	get  pods
+#kubectl  get   svc
+
+open web browser
+http://a2cac0da54b284b7d91951002e47aa6a-1209225021.ap-south-1.elb.amazonaws.com
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+17. Remove running pods and service
+
+#kubectl delete -f education.yml
+#kubectl delete -f eduservice.yml
+#kubectl	get  pods
+#kubectl  get   svc
+=====================================================================================================
+18. Create deployment Manifest File
+
+$ vim tourist.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-web
+  labels:
+     app: tourist
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tourist
+
+  template:
+    metadata:
+      labels:
+        app: tourist
+    spec:
+      containers:
+      - name: tourist
+        image: nginx
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+:wq
+--------------------------------------------------------------------------------
+15. Create Service Manifest File 
+
+$ vim eduservice.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sevenmentor-service
+  labels:
+    app: tourist
+spec:
+  selector:
+    app: tourist
+
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer
+:wq
+
+
+16. run deployment and service
+#kubectl apply -f education.yml
+#kubectl  apply  -f eduservice.yml
+
+#kubectl	get  pods
+#kubectl  get   svc
+
+open web browser
+http://a2cac0da54b284b7d91951002e47aa6a-1209225021.ap-south-1.elb.amazonaws.com
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+17. Remove running pods and service
+
+#kubectl delete -f education.yml
+#kubectl delete -f eduservice.yml
+#kubectl	get  pods
+#kubectl  get   svc
+------------------------------------------------------------------------------------------------------------------------------------------
+Expose node port 32000
+
+create manifest file
+#vim web.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-server
+  labels:
+    app: app-server
+spec:
+  selector:
+    matchLabels:
+      app: app-server
+  template:
+    metadata:
+      labels:
+        app: app-server
+    spec:
+      containers:
+      - name: web-server
+        image: hackwithabhi/medistore
+        ports:
+        - containerPort: 80
+:wq
+
+create service file
+#vim wservice.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  type: NodePort
+  ports:
+    - nodePort: 32000
+      port: 80
+      targetPort: 80
+  selector:
+    app: app-server
+:wq
+
+17. run deployment and service
+#kubectl apply -f web.yml
+#kubectl  apply  -f  wservice.yml
+
+to access web page check nodes public ipaddress and use port number 32000
+http://3.40.20.2:3200
+
+
+
+
+
+
+
+=====================================================================================
+14. delete create sevenmentor cluster
+#eksctl delete cluster --region=ap-south-1 --name=sevenmentor-cluster
+======================================================================================

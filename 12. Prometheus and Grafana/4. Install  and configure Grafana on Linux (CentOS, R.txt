@@ -1,0 +1,61 @@
+Install Grafana on Linux (CentOS, RedHat, Amazon Linux 2023)
+=======================================================================================
+Now lets Install Grafana for wonderful dashboards and data visualization for monitoring systems, servers, services, etc
+
+Add the Grafana YUM repo using vim command
+
+#sudo vim /etc/yum.repos.d/grafana.repo
+[grafana]
+name=grafana
+baseurl=https://packages.grafana.com/enterprise/rpm
+repo_gpgcheck=1
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.grafana.com/gpg.key
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+:wq
+-----------------------------------------------------------------------------------------------------
+update the system packages to take effect
+#sudo yum update -y
+------------------------------------------------------------------------------------------------------
+Now lets Install Grafana using below command
+#sudo yum install grafana -y
+---------------------------------------------------------------------------------------------------------------------
+Note:
+Install grafana on amazon-linux 2023
+
+#sudo yum install -y https://dl.grafana.com/oss/release/grafana-11.2.0-1.x86_64.rpm
+---------------------------------------------------------------------------------------------------------------------
+or
+---------------------------------------------------------------------------------------------------------------------
+#wget  https://dl.grafana.com/oss/release/grafana-11.2.0-1.x86_64.rpm
+
+#rpm -ivh  grafana-11.2.0-1.x86_64.rpm
+or
+#yum  localinstall  grafana-11.2.0-1.x86_64.rpm  -y
+---------------------------------------------------------------------------------------------------------------------
+Now start and enable the Grafana service using below command
+#sudo systemctl start grafana-server
+#sudo systemctl enable grafana-server
+------------------------------------------------------------------------------------------------------
+Verify the Grafana Service Status using below command
+#sudo systemctl status grafana-server
+------------------------------------------------------------------------------------------------------
+To access Grafana Dashboard open your favorite browser, type server IP or Name followed by grafana default port 3000.
+
+http://your_ip:3000
+
+Here you can see Login page of Grafana now you will have to login with below Grafana default UserName and Password.
+
+Username – admin
+Password – admin
+
+set creadentias as per your requirement.
+------------------------------------------------------------------------------------------------------
+Configure Prometheus as Grafana DataSource
+
+Once you logged into "Grafana" Now first Navigate to Settings Icon ->> Configuration ->> data sources
+or
+Once you logged into "Grafana" Now first Navigate to Settings Icon ->> Connections ->> data sources - add data source - select "prometheus" -  set url  = http://192.168.100.184:9090 - Save&Test
+=============================================================================================================

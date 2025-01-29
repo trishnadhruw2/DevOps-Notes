@@ -1,0 +1,52 @@
+Install Node Exporter on Windows Server 2k16/19/22
+============================================================================
+Step1: for  dowonload node exporter from official site
+https://github.com/prometheus-community/windows_exporter/releases
+
+download windows .msi exporter file (windows_exporter-0.29.0-amd64.msi)
+-----------------------------------------------------------------------------------------------------------------
+Step2: install downloaded msi file
+go to download - double click on "windows_exporter-0.29.0-amd64.msi" file - next - next - finish.
+-----------------------------------------------------------------------------------------------------------------
+
+Now, node exporter would be exporting metrics on port 9182. 
+
+====================================================================================
+
+Step3: Add new client to Prometheus Server ( Steps on prometheus server )
+====================================================================================
+Register new IP of client to /etc/hosts on prom server
+#sudo vim /etc/hosts
+192.168.100.111 client1
+192.168.100.112 jenkins
+192.168.100.115 windows
+:wq
+------------------------------------------------------------------------------------------------------
+Step4: Add new config at prometheus server at /etc/prometheus/prometheus.yml
+
+#sudo vim /etc/prometheus/prometheus.yml
+## add this to bottom of the line
+- targets: ['CLIENTHOSTNAME:NODE_EXPORTERPORT']## example
+- targets: ['client1:9100']
+- targets: ['jenkins:9100']
+
+  - job_name: "winserver"
+    static_configs:
+      - targets: ['windows:9182']
+
+:wq
+------------------------------------------------------------------------------------------------------
+Step5: Now restart the Prometheus Service
+#sudo systemctl restart prometheus
+
+Create new dashboard for windows clients
+
+http://prometheus ip:3000/
+
+create new dashboad - import  dashboard - 14694 ( https://grafana.com/grafana/dashboards/14694-windows-exporter-dashboard/ ) - import - view dashboard for windows metrics
+
+------------------------------------------------------------------------------------------------------
+URL in your web browser to check weather our target is successfully scraped by Prometheus or not
+http://localhost:9090/targets
+http://localhost:3000/
+

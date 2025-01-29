@@ -1,0 +1,310 @@
+Kubernetes networking addresses four concertns-
+1. containers within a pod use networking to communicate  via loopback.
+2. cluster networking provide communication between different pods.
+3. the services resoruces lets you expose an application running pods to be reachable from outside your cluster
+4. you can also use services to publish services only for consumption inside your cluster.
+
+
+=================================
+KUBERNETES NETWORKING
+=================================
+communicate 2 container running in same pod.
+
+#vim poda1.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpod
+spec:
+  containers:
+    - name: c00
+      image: ubuntu
+      command: ["/bin/bash", "-c", "while true; do echo Hello-SevenMentor; sleep 5 ; done"]
+    - name: c01
+      image: httpd
+      ports:
+       - containerPort: 80
+:wq
+
+#kubectl apply -f poda1.yml
+#kubectl get pods
+
+2 container start here,now goto container c00
+#kubectl exec testpod -it -c c00 -- /bin/bash
+now try to open c01 container web page
+testpod#apt update && apt install curl
+testpod#curl localhost:80
+testpod#exit
+
+#kubectl delete -f poda1.yml
+=====================================================================================================================
+communicate 2 container running in defferent pod in same node
+
+create first pod
+
+#vim poda2.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpoda2
+spec:
+  containers:
+    - name: c02
+      image: nginx
+      ports:
+       - containerPort: 80
+:wq
+
+---------------------------------------------------------------------------
+create second pod
+
+#vim poda3.yml
+
+kind: Pod
+apiVersion: v1
+metadata:
+  name: testpoda3
+spec:
+  containers:
+    - name: c03
+      image: httpd
+      ports:
+       - containerPort: 80
+:wq
+#kubectl apply -f poda2.yml
+#kubectl apply -f poda3.yml
+#kubectl get pods
+#kubectl get pods -o wide
+
+go to one by one pod and verify each other ip with curl command
+#curl 172.17.0.3:80
+#curl 172.17.0.4:80
+
+pod can access each other web pages
+==================================================================================================================
+Why service:
+Each pod gets its own ip adddress whenver it start, but when we replicat it into multiple pod or it failure then it will be updated, it critical for customer to access that service though constant ip address.
+
+When using replica controller pod are terminated and created during scaling or replication operation.
+also when we using deployment,update the image version that time old pod terminated and new pod generated,means pods are dynamic environment as per requirement and ip address changes time to time.
+
+Service:
+Service object is a logical bridge between pods and end user.
+service allow client to reliably connect the container running in pod using the VIP (Virtual IP)
+The VIP is not an actual Ip connected to a network interface but its purpose is purely to forward traffic to one or more pods.
+kube proxy is the one which keeps the mapping between the VIP and the pods upto date.
+Each pod has a unique IP address those IP are not exposed outside the cluster.
+Services help to expose the VIP mapped to the pods and allow application to receive traffic.
+Labels are used to select which are the pods to be put under a service.
+creating a server will create on endpoint to access the pods/application in it.
+service can be exposed in different ways by specifying a type in the service specification
+- cluster IP
+- NodePort
+
+by default service can run only between ports 30000-32767.
+the set of pods targeted by a service is usually determined by a selector.
+
+1. cluster IP:
+Expose VIP only rechable from within the cluster.
+manily used to communicate between component of microservices.
+====================================================================================================
+
+#vim deployhttpd.yml
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+   name: mydeployments
+spec:
+   replicas: 1
+   selector:      # tells the controller which pods to watch/belong to
+    matchLabels:
+     name: deployment
+   template:
+     metadata:
+       name: testpod1
+       labels:
+         name: deployment
+     spec:
+      containers:
+        - name: c00
+          image: httpd
+          ports:
+          - containerPort: 80
+:wq
+#kubectl apply -f deployhttpd.yml
+#kubectl get pods
+
+#kubectl get pods -o wide
+#curl  172.17.0.3:80
+
+create service
+====================
+#vim service.yml
+
+kind: Service                             # Defines to create Service type Object
+apiVersion: v1
+metadata:
+  name: demoservice
+spec:
+  ports:
+    - port: 80                               # Containers port exposed
+      targetPort: 80                     # Pods port
+  selector:
+    name: deployment                    # Apply this service to any pods which has the specific label
+  type: ClusterIP                       # Specifies the service type i.e ClusterIP or NodePort
+
+:wq
+
+#kubectl apply -f service.yml
+#kubectl get svc
+(it show VIP for the Pods)
+#kubectl get pods
+#kubectl delete pod mydeployments-23retk4
+#kubectl get pods
+#kubectl get pods -o wide
+#curl VIP
+
+#kubectl delete -f deployhttpd.yml
+#kubectl get pods
+
+NodePort:
+makes a service accessible from outside the cluster.
+expose the service on  the same port of each selected node in the cluster using NAT.
+
+#kubectl apply -f deployhttpd.yml
+#kubectl get pods
+
+Create NodePort
+#vim svc.yml
+#vim service.yml
+
+kind: Service                             # Defines to create Service type Object
+apiVersion: v1
+metadata:
+  name: demoservice
+spec:
+  ports:
+    - port: 80                               # Containers port exposed
+      targetPort: 80                     # Pods port
+  selector:
+    name: deployment                    # Apply this service to any pods which has the specific label
+  type: NodePort                       # Specifies the service type i.e ClusterIP or NodePort
+
+:wq
+
+#kubectl apply -f service.yml
+#kubectl get svs
+#kubectl describe svc demoservice
+
+Now it accessible from the internet with public DNS (public ip withport forward)
+
+open browser and open dns address
+https://dns:31332
+
+===================================================================
+Volume:
+Containers are short live in nature.
+All data stored inside a container, if container is deleted or it crash then kubelet create new and clean state container. 
+To resolve this issue we can use volume, a volume is  attach with pod for containers, so volume preserved data in case of container crash or delete.
+
+emptydir:
+emptydir use when we want to share the contents between the multiple container in pod, not with hosts machin.
+emptydir volume assigne to a pod when it was created, as per name it empty.
+
+#vim emptydir.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myvolemptydir
+spec:
+  containers:
+  - name: c1
+    image: centos
+    command: ["/bin/bash", "-c", "sleep 15000"]
+    volumeMounts:                                    # Mount definition inside the container
+      - name: xchange
+        mountPath: "/tmp/xchange"          
+  - name: c2
+    image: centos
+    command: ["/bin/bash", "-c", "sleep 10000"]
+    volumeMounts:
+      - name: xchange
+        mountPath: "/tmp/data"
+  volumes:                                                   
+  - name: xchange
+    emptyDir: {}
+
+:wq
+#kubectl apply -f emptydir.yml
+#kubectl get pods
+#kubectl exec myvolemptydir -c c1 -it -- /bin/bash
+   #cd /tmp/
+   #ls
+   #cd xchange/
+   #touch note.txt
+   #cat > note.txt
+	my file created in volume
+   ctrl+d
+   #ls
+	#exit
+#kubectl exec myvolemptydir -c c2 -it -- /bin/bash
+	#cd /tmp
+	#ls
+	#cd data
+	#ls
+	#touch container2.txt
+	#cat >> note2.txt
+	i am container 2
+	bye
+	#exit
+#kubectl exec myvolemptydir -c c1 -it -- /bin/bash
+   #cd /tmp/
+   #ls
+   #cd xchange/
+   #ls
+
+
+#kubectl delete -f emptydir.yml
+==================================================================================================================
+HOST PATH
+It use when we want to access container content of a pod/container from a host machine.
+
+#vim hostpath.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myvolhostpath
+spec:
+  containers:
+  - image: centos
+    name: testc
+    command: ["/bin/bash", "-c", "sleep 15000"]
+    volumeMounts:
+    - mountPath: /tmp/hostpath
+      name: testvolume
+  volumes:
+  - name: testvolume
+    hostPath:
+      path: /tmp/data 
+:wq
+
+#kubectl apply -f hostpath.yml
+#kubectl get pods
+verify in data
+#cd /tmp
+#ls
+#cd data
+#ls
+
+#kubectl exec myvolhostpath -- ls /tmp
+#kubectl exec myvolhostpath -- ls /tmp/hostpath
+
+#echo " welcome to container > myfile.txt
+
+#kubectl exec myvolhostpath -- ls /tmp/hostpath
+

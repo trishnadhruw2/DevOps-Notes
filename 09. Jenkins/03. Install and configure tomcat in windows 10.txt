@@ -1,0 +1,98 @@
+Step for install jenkins on windows server2022:
+===================================================================
+Step 1: download java 17 and install it
+https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
+----------------------------------------------------------------------------------
+Step2: after download install with default settings
+----------------------------------------------------------------------------------
+Step3: Set environment variable path
+
+go to C drive -programming files-java-jdk17 - select path and copy it.
+search 'edit system environment variables- environmental variable -  go to user variable- new - 
+variable name- JAVA_HOME
+Variable Value- paste the path here,
+----------------------------------------------------------------------------------
+Now go to  system variale - new
+
+variable name - JAVA_HOME
+Variable value - paste the same  here
+----------------------------------------------------------------------------------
+now go inside programfile - bin -copy the path.
+again go to "edit system environment variable-  path  - new - paste path.
+----------------------------------------------------------------------------------
+Now verify on command prompt-
+echo %JAVA_HOME%
+----------------------------------------------------------------------------------
+check java version
+java -version
+--------------------------------------------------------------------------------------------------------------
+Step2: Download jenkins for windows
+https://www.jenkins.io/download/
+
+to check installation steps (official site)
+https://www.jenkins.io/doc/book/installing/windows/
+----------------------------------------------------------------------------------
+Step3: install jenkins
+after download  Double click and install jenkins
+----------------------------------------------------------------------------------
+Step4: open web-browser
+http://localhost:8080
+----------------------------------------------------------------------------------
+Step5: login with default password and go with "install suggested plugins" then set username and password,
+
+login admin
+pass  111
+----------------------------------------------------------------------------------
+Step6: start jenkins
+
+http://localhost:8080/jenkins
+
+login in jenkins with respective password,without any plugins, set username=admin password=111
+===========================================================================
+
+
+
+
+Run and install it
+go to C drive -programming files-java-jdk18 - select path and copy it.
+search 'edit system environment variables- environmental variable -  go to user variable- new - 
+variable name- JAVA_HOME
+Variable Value- paste the path here,
+
+Now go to  system variale - new
+
+variable name - JAVA_HOME
+Variable value - paste the same  here
+
+now go inside programfile - bin -copy the path.
+again go to "edit system environment variable-  path  - new - paste path.
+
+Now verify on command prompt-
+c:\user\name\echo %JAVA_HOME%
+
+O/P: C:\Progrmefiles\Java\jdk-16
+or
+java -version
+=====================================================================
+Step 4: Install Jenkins
+
+download jenkins from official site.
+https://www.jenkins.io/download/
+
+Double click and install jenkins
+
+
+open web-browser
+http://localhost:8080
+set username and password,
+
+login admin
+pass  111
+
+start jenkins
+
+http://localhost:8080/jenkins
+
+login in jenkins with respective password,without any plugins, set username=admin password=111
+
+========================================================================

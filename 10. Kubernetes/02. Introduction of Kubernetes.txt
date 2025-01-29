@@ -1,0 +1,62 @@
+Kubernetes:
+- Kubernetes is an open-source container management tool which automates container deployment, container scaling & load balancing.
+- It schedules, runs and manages isolated containers which are running on virtual/physical/cloud machines.
+- All top cloud service providers support kubernetes.
+
+History:
+- Google developed an internal system called Borg (latex named as Omega) to deploy and manage thousands of google application and services on their cluster.
+- In 2014, google introduced kubernetes an open source platform written in “Golang” and later donated to CNFC (Cloud Native Computing Foundation)
+
+Online Platform for learn K8S
+- Kubernets playground 
+- Play with k8s
+- Play with kubernetes classroom
+
+Cloud based k8s services
+- GKE – Google Kubernetes services
+- AKS – Azure Kubernetes services
+- Amazon Eks – Elastic Kubernets Services
+
+Kubernetes installation tools
+- Minikube
+- Kubeadm
+
+Why k8S:
+
+Problem with scaling up the containers:
+- Containers cannot communicate with each other.
+- Auto scaling and Load Balancing was not possible.
+- Containers had to be managed carefully.
+
+Features of Kubernetes
+- Orchestration (clustering of any number of containers running on different n/w)
+- Auto Scaling
+- Auto- healing
+- Load Balancing
+- Platform Independent (cloud/virtual/physical)
+- Fault Tolerance (Node / POD Failure)
+- Rollback (going back to previous version)
+- Health monitoring of containers
+- Batch Execution (one time, sequential, parallel)
+
+Compare Kubernetes & Docker Swarm
+----------------------------------------------------------
+Kubernets:
+1.	Installation process is complicated and time consuming
+2.	It can work with almost all containers types like Rocket, Docker, ContainerD etc
+3.	GUI version available
+4.	Only shared with containers in same POD
+5.	Process scheduling to maintain services while updating
+6.	Support vertical and horizontal autoscaling
+7.	Inbuilt tool present for monitoring and log
+
+Docker Swarm:
+1.	Installation process is fast and easy.
+2.	It can work with only docker container
+3.	GUI version not available
+4.	Can be shared with any other container.
+5.	Progressive updates of services health monitoring throughout the update.
+6.	Not support Auto scaling
+7.	Used 3rd party tools like splunk
+Apache Marathon also competitor of kubernetes and Docker Swarm
+

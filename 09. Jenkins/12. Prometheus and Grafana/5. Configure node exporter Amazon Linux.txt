@@ -1,0 +1,91 @@
+Add client into prometheus for monitor
+=============================================
+Security Groups Configured on EC2 Instances
+Port 9090 — Prometheus Server
+Port 9100 — Prometheus Node Exporter
+==============================================
+Step for add client on prometheus (Node Exporter)
+
+To install Node Exporter first navigate to Prometheus official download page (https://prometheus.io/download/), Scroll down and you will get node_exporter section and then select Linux OS for amd64.
+Now right click on node exporter and copy link address
+------------------------------------------------------------------------------------------------------
+set hostname to client computer
+$sudo hostnamectl set-hostname client1
+$sudo su
+#timedatectl  set-timezone  Asia/Kolkata
+------------------------------------------------------------------------------------------------------
+#cd /tmp
+
+#sudo wget https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
+------------------------------------------------------------------------------------------------------
+Unzip the downloaded the file using below command
+
+#sudo tar -xvzf node_exporter-*.*-amd64.tar.gz
+
+------------------------------------------------------------------------------------------------------
+Move the binary file of node exporter to /usr/local/bin location.
+#sudo mv node_exporter-*.*-amd64/node_exporter /usr/local/bin/
+------------------------------------------------------------------------------------------------------
+
+Create a node_exporter user to run the node exporter service.
+#sudo useradd -rs /bin/false node_exporter
+------------------------------------------------------------------------------------------------------
+Create a node_exporter service file in the /etc/systemd/system directory
+#sudo vim /etc/systemd/system/node_exporter.service
+
+[Unit]
+Description=Node Exporter
+After=network.target
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+[Install]
+WantedBy=multi-user.target
+
+:wq
+------------------------------------------------------------------------------------------------------
+Now lets start and enable the node_exporter service using below commands 
+
+#sudo systemctl daemon-reload
+#sudo systemctl enable node_exporter
+#sudo systemctl start node_exporter
+
+Lets Check the Status of Node Exorter:
+#sudo systemctl status node_exporter
+------------------------------------------------------------------------------------------------------
+
+Now, node exporter would be exporting metrics on port 9100. 
+====================================================================================
+
+Add new client to Prometheus Server ( Steps on prometheus server )
+====================================================================================
+
+Register new IP of client to /etc/hosts on prom server
+#sudo vim /etc/hosts
+192.168.100.111 client1
+:wq
+------------------------------------------------------------------------------------------------------
+Add new config at prometheus server at /etc/prometheus/prometheus.yml
+
+#sudo vim /etc/prometheus/prometheus.yml
+## add this to bottom of the line
+- targets: ['CLIENTHOSTNAME:NODE_EXPORTERPORT']## example
+- targets: ['client1:9100']
+
+:wq
+------------------------------------------------------------------------------------------------------
+
+Now restart the Prometheus Service
+#sudo systemctl restart prometheus
+------------------------------------------------------------------------------------------------------
+open grafana console & add dashboard ( on prometheus server )
+Home- dashboard- create dashboard - import dashboard - find and import dahsboard .. ( 1860 ) - Load - name (mydashboard) - datasource (prometheus) - import.
+
+It show all client details in visualization
+------------------------------------------------------------------------------------------------------
+URL in your web browser to check weather our target is successfully scraped by Prometheus or not
+http://localhost:9090/targets
+
+

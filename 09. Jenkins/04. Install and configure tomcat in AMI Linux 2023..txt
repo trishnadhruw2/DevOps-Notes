@@ -1,0 +1,155 @@
+Steps for Install and configure Tomact in AMI Linux2023
+======================================================================================================
+Step1: Set hostname and timezone
+$sudo hostnamectl set-hostname jenkins
+$sudo timedatectl set-timezone Asia/Kolkata
+$sudo su
+---------------------------------------------------------------------------------------------------------------------
+Step2: Install java 17
+#yum update  -y
+#yum install java-17* -y
+#java  --version
+---------------------------------------------------------------------------------------------------------------------
+Step3: Create tomcat user and group
+#groupadd --system tomcat
+#useradd -d /usr/share/tomcat -r -s /bin/false -g tomcat tomcat
+---------------------------------------------------------------------------------------------------------------------
+Step4: Download and Install Tomcat 9 
+#wget https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.63/bin/apache-tomcat-9.0.63.tar.gz
+---------------------------------------------------------------------------------------------------------------------
+Step5: Use tar command line tool to extract downloaded archive.
+#tar -xvzf apache-tomcat-9.0.63.tar.gz -C /usr/share/
+---------------------------------------------------------------------------------------------------------------------
+Step6: Create Symlink to the folder /usr/share/tomcat. This is for easy updates.
+#ln -s /usr/share/apache-tomcat-9.0.63/ /usr/share/tomcat
+---------------------------------------------------------------------------------------------------------------------
+Step7: Update folder permissions
+#chown -R tomcat:tomcat /usr/share/tomcat
+#chown -R tomcat:tomcat /usr/share/apache-tomcat-9.0.63/
+---------------------------------------------------------------------------------------------------------------------
+Step8: Create Tomcat Systemd service
+
+#tee /etc/systemd/system/tomcat.service<<EOF
+[Unit]
+Description=Tomcat Server
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=tomcat
+Group=tomcat
+
+Environment=JAVA_HOME=/usr/lib/jvm/jre
+Environment='JAVA_OPTS=-Djava.awt.headless=true'
+Environment=CATALINA_HOME=/usr/share/tomcat
+Environment=CATALINA_BASE=/usr/share/tomcat
+Environment=CATALINA_PID=/usr/share/tomcat/temp/tomcat.pid
+Environment='CATALINA_OPTS=-Xms512M -Xmx1024M'
+ExecStart=/usr/share/tomcat/bin/catalina.sh start
+ExecStop=/usr/share/tomcat/bin/catalina.sh stop
+
+
+[Install]
+WantedBy=multi-user.target
+EOF
+---------------------------------------------------------------------------------------------------------------------
+Step9: reload daemon
+#systemctl daemon-reload
+---------------------------------------------------------------------------------------------------------------------
+Step10: start and enable tomcat service
+
+#systemctl start tomcat
+#systemctl enable tomcat
+#systemctl status tomcat
+---------------------------------------------------------------------------------------------------------------------
+Note:  step 11 required if your use rhel/centos.
+
+Step11:  Allow Tomcat TCP port 8080 if you have firewalld service enabled.
+#sudo firewall-cmd --permanent --add-port=8080/tcp
+#sudo firewall-cmd --reload
+---------------------------------------------------------------------------------------------------------------------
+Step12:.Configure Tomcat Authentication
+We have to edit Tomcat configuration file to enable Admin and Manager UI roles.
+
+#vim /usr/share/tomcat/conf/tomcat-users.xml
+Add below lines before closing with </tomcat-users>
+
+<role rolename="admin-gui"/>
+<role rolename="manager-gui"/>
+<user username="admin" password="111" fullName="Administrator" roles="admin-gui,manager-gui"/>
+:wq
+---------------------------------------------------------------------------------------------------------------------
+Step13: restart tomcat service
+#systemctl restart tomcat
+---------------------------------------------------------------------------------------------------------------------
+Step14: Configure Apache web server as a proxy for Tomcat server. 
+
+First install httpd package.
+#yum install httpd   -y
+---------------------------------------------------------------------------------------------------------------------
+Step15: Create VirtualHost file for Tomcat Admin web interface:
+
+# vim /etc/httpd/conf.d/tomcat_manager.conf
+<VirtualHost *:80>
+    ServerAdmin root@localhost
+    ServerName tomcat.example.com
+    DefaultType text/html
+    ProxyRequests off
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:8080/
+    ProxyPassReverse / http://localhost:8080/
+</VirtualHost>
+
+<VirtualHost *:80>
+  ServerName ajp.example.com
+
+  ProxyRequests Off
+  ProxyPass / ajp://localhost:8009/
+  ProxyPassReverse / ajp://localhost:8009/
+</VirtualHost>
+
+:wq
+---------------------------------------------------------------------------------------------------------------------
+Step16: start and enable httpd service
+
+#systemctl start httpd
+#systemctl enable httpd
+#systemctl status httpd
+---------------------------------------------------------------------------------------------------------------------
+Step17: Open Web Browser and open address
+http://192.168.0.50
+
+click on "Manage app"
+username: admin	
+password: 111
+---------------------------------------------------------------------------------------------------------------------
+Step18: Open terminal and go inside tomcat webapp directory
+#cd /usr/share/tomcat/webapps
+#ls
+---------------------------------------------------------------------------------------------------------------------
+Step19: Download jenkins war file
+#wget  https://updates.jenkins.io/download/war/2.426.3/jenkins.war
+---------------------------------------------------------------------------------------------------------------------
+Step20: restart tomcat service
+#systemctl restart tomcat
+---------------------------------------------------------------------------------------------------------------------
+Step21: Open Web Browser and open address
+http://192.168.0.50/jenkins
+
+now unlock jenkins ( with  initialAdminPassword )
+#cat /usr/share/tomcat/.jenkins/secrets/initialAdminPassword
+
+now it show password copy it,use this password in browser to login
+
+b41e9243fa534e2d893e5f10c63e0e69
+---------------------------------------------------------------------------------------------------------------------
+Step22: now select "Install suggested plugins"
+---------------------------------------------------------------------------------------------------------------------
+Step23: set username and password access jenkins in future
+
+username: admin
+password: 111
+
+click on "save and continue" - "save and finish" - "start using jenkins"
+Now dashboard is open.
+=================================================================================================

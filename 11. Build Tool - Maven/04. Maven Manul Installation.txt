@@ -1,0 +1,56 @@
+Install git and java first
+--------------------------------------------------------------------------------------
+
+Step1: Download maven ( bin.tar.gz)
+https://maven.apache.org/download.cgi
+
+#cd /opt
+#wget https://dlcdn.apache.org/maven/maven-3/3.9.8/binaries/apache-maven-3.9.8-bin.tar.gz
+#tar -xvzf apache-maven-3.9.8-bin.tar.gz
+#ls
+#rm   -rvf    *.gz
+#ls
+-------------------------------------------------------------------------------------
+Step2: Set maven and java path
+#cd
+#vim  .bash_profile
+MAVEN_HOME=/opt/apache-maven-3.9.8/
+M2=/opt/apache-maven-3.9.8/bin/
+JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64/
+PATH=$PATH:$JAVA_HOME:$MAVEN_HOME:$M2:$HOME/bin
+:wq
+
+#source .bash_profile
+#echo  $MAVEN_HOME
+#echo  $JAVA_HOME
+#echo  $M2
+OR
+#echo $PATH
+-----------------------------------------------------------------------------------------
+Step3:  Open jenkins dashboard
+
+create free styple project - devpro1 - Source Code Management - Git - Repository URL - (https://github.com/hackwithabhi1/webapp.git) - Apply - Save - build project.
+-------------------------------------------------------------------------------------
+Step4: Open jenkins -   Dashboard – manage jenkins - plugins - available plugins 
+-  Maven Integration
+-  Publish Over SSH
+-  GitHub plugin
+
+Restart Jenkins
+--------------------------------------------------------------------------------------
+Step5: Open jenkins - Dashboard – Manage Jenkins – Tools –
+
+JDK Installations - Add JDK - Name ( java17 ) - JAVA_HOME ( /usr/lib/jvm/java-17-amazon-corretto.x86_64/ )
+
+Git Installations 
+ git – Name (default) – path to git execute ( /bin/git )
+
+Maven Installations - Add Maven – Name (mvn) – MAVEN_HOME( /opt/apache-maven-3.9.8/ )– Apply – Save.
+
+--------------------------------------------------------------------------------------
+Step13. Test maven
+
+Dashboard – devpro1 - configure -  
+Build Steps (invoke top-level maven targets ) – Maven version (mvn) – Goals ( clean install package ) – Apply – Save.
+
+Dashboard – devpro1 – Build Now – console output.
