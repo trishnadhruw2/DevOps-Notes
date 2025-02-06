@@ -1,0 +1,181 @@
+How to Add linux Host to Nagios Monitoring Server
+
+
+The NRPE addon requires that Nagios Plugins must be installed on the remote Linux machine. Without these, the NRPE daemon will not work and will not monitor anything.
+
+Installation of nrpe plugin on remote host
+Remote host ip: 192.168.1.101 (hostname = client1)
+
+Nagios server ip: 192.168.1.100
+=======================================================================
+Perform following steps on linux client (client1):
+=======================================================================
+First we need to install few dependency packages like below
+
+Step1: set hostname and timedate
+$sudo  hostnamectl set-hostname client1
+$sudo  timedatectl set-timezone Asia/Kolkata
+$sudo su
+--------------------------------------------------------
+Step2: install dependecies
+
+# yum install -y gcc glibc glibc-common gd gd-devel make net-snmp openssl-devel perl -y
+---------------------------------------------------------------
+Step3: Create one directory for installation and download plugins into that directory.
+
+# mkdir ~/nagios
+# cd  ~/nagios
+
+Install NRPE
+download and install nrpe plugins 
+
+# wget https://github.com/NagiosEnterprises/nrpe/releases/download/nrpe-3.2.1/nrpe-3.2.1.tar.gz
+
+Extract downloaded tool
+# tar -xvzf nrpe-3.2.1.tar.gz
+==========================================================
+compile and install nrpe as shown below
+
+# cd nrpe-3.2.1
+# ./configure
+# make all
+# make install-groups-users
+==========================================================
+##### Install binaries #####
+[root@client1 nrpe-3.2.1]# make install 
+
+####### Install Configuration Files  ########
+[root@client1 nrpe-3.2.1]# make install-config
+
+update services file
+The /etc/services file is used by applications to translate human readable service names into port numbers when connecting to a machine across a network.
+
+[root@client1 ~]# echo >> /etc/services
+[root@client1 ~]# echo '# Nagios services' >> /etc/services
+[root@client1 ~]# echo 'nrpe    5666/tcp' >> /etc/services
+
+Install service /daemon files
+
+[root@client1 nrpe-3.2.1]# make install-init
+===========================================================================
+update nrpe config file
+Add nagios server ip allowed hosts in nrpe.cfg
+
+[root@client1 ~]# vim /usr/local/nagios/etc/nrpe.cfg
+change allowed_hosts as below (add nagios server ip) and save it.
+
+allowed_hosts=127.0.0.1,192.168.1.100
+:wq
+
+Now start nrpe service and also enable in startup as below
+
+[root@client1 ~]# systemctl start nrpe
+[root@client1 ~]# systemctl enable nrpe
+verify nrpe daemon with netstat command
+
+[root@client1 ~]# netstat -antp | grep nrpe
+tcp        0      0 0.0.0.0:5666            0.0.0.0:*               LISTEN      11285/nrpe          
+tcp6       0      0 :::5666                 :::*                    LISTEN      11285/nrpe 
+Next, verify the NRPE daemon is functioning properly. Run the “check_nrpe” command that was installed earlier for testing purposes.
+
+[root@client1 ~]# /usr/local/nagios/libexec/check_nrpe -H 127.0.0.1
+sample output
+
+NRPE v3.2.1
+
+configure firewall 
+Make sure that firewall on the local machine will allow the NRPE daemon to be accessed from remote servers.To do this run following command
+
+[root@client1 ~]# firewall-cmd --permanent --zone=public --add-port=5666/tcp
+
+=============================================================================================
+======================================================================================
+Add remote Linux host to Nagios server
+
+
+[root@centos ~]# vim /usr/local/nagios/etc/nagios.cfg
+
+add below lines to config file
+
+# Definitins for monitoring the local (linux)host 
+cfg_file=/usr/local/nagios/etc/objects/client.cfg
+:wq
+
+#cd /usr/local/nagios/etc/objects
+#cp localhost.cft  client.cfg
+=======================================================================================
+#vim client.cfg
+
+# Define an optional hostgroup for Linux machines
+remove that lines of options hostgroup linux
+
+## Default
+define host{
+use                             linux-server               ; Inherit default values from a template
+host_name                       client1           ; The name we're giving to this server
+alias                           CentOS 7                ; A longer name for the server
+address                         192.168.1.101            ; IP address of Remote Linux host
+}
+
+Note:
+update service with client1 hostname(For all following service)
+host_name      client1
+
+:wq
+save the file. Next open services.cfg file and add the following services to be monitored.
+
+[root@centos ~]# vi /usr/local/nagios/etc/services.cfg
+define service{
+        use                       generic-service       
+        host_name                 client1
+        service_description       PING
+        check_command             check_ping!100.0,20%!500.0,60%
+        }
+define service{
+        use                       generic-service       
+        host_name                 client1
+        service_description       SSH
+        check_command             check_ssh
+        notifications_enabled         0
+        }
+define service{
+        use                     generic-service
+        host_name               client1
+        service_description     CPU Load
+        check_command           check_nrpe!check_load
+        }
+define service{
+        use                     generic-service
+        host_name               client1
+        service_description     Total Processes
+        check_command           check_nrpe!check_total_procs
+        }
+define service{
+        use                     generic-service
+        host_name               client1
+        service_description     Current Users
+        check_command           check_nrpe!check_users
+       }
+define service{
+        use                     generic-service
+        host_name               client1
+        service_description     HTTP
+        check_command           check_nrpe!check_http
+        }
+define service{
+        use                      generic-service         
+        host_name                client1
+        service_description      Swap Usage
+        check_command            check_nrpe!check_swap
+        }
+:wq
+
+[root@centos ~]# systemctl restart nagios
+[root@centos ~]# systemctl status nagios
+============================================================================================
+Open web browser
+http://192168.1.101
+
+ref
+https://www.tecmint.com/install-nagios-in-linux/
+https://www.tecmint.com/how-to-add-linux-host-to-nagios-monitoring-server/

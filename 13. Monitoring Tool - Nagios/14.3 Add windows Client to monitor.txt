@@ -1,0 +1,55 @@
+How to Add Windows Host to Nagios Monitoring Server
+
+Nagisos Server IP Address		: 192.168.1.103
+windows host (client) IP Add	: 192.168.1.105 (hostname = DESKTOP-927BP6Q)
+
+To monitor Windows Machines you will need to follow several steps and they are:
+
+Install NSClient++ addon on the Windows Machine.
+Configure Nagios Server for monitoring Windows Machine.
+Add new host and service definitions for Windows machine monitoring.
+Restart the Nagios Service.
+
+
+STEP 1 Downloading & installing NSclient++
+We can download the latest version of NSclient++ from following link on the windows machine https://sourceforge.net/projects/nscplus/
+
+Now comes the main part of setup, here you will be asked to enter the IP of nagios server
+======================================================================
+STEP 2 Configuring Nagios server
+
+ open nagios configuration file,
+$ vim /usr/local/nagios/etc/nagios.cfg
+
+&  uncomment the following line
+
+# Definitions for monitoring a Windows machine
+cfg_file=/usr/local/nagios/etc/objects/windows.cfg
+
+/usr/local/nagios/etc/objects/windows.cfg  is the file where we will add information about our Windows hosts. Now we will edit the windows.cfg file
+
+$ vim /usr/local/nagios/etc/objects/windows.cfg
+
+A sample host definition is already present in the file, we can either copy it or edit it to point to our windows machine
+
+
+define host{
+        use             windows-server  ; Inherit default values from a template
+        host_name       winserver       ; The name we're giving to this host
+        alias           My Windows Server       ; A longer name associated with the host
+        address         192.168.1.103    ; IP address of the host
+        }
+
+
+:wq
+
+verify the Nagios configuration files for any erros.
+/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+
+
+restart the Nagios service.
+
+# service nagios restart
+
+Open browser and verify hosts
+http://192.168.1.100/nagios

@@ -1,0 +1,101 @@
+Installation of Nagios on Linux:
+
+Nagios core installation on Amazon AMI Linux2/2023
+===========================================================================================================
+Step0: set hostname and timedate
+$sudo hostnamectl set-hostname nagios.example.com
+$sudo timedatectl set-timezone Asia/Kolkata
+$sudo  su
+===========================================================================================================
+Step1:
+To Install Nagios install dependency tools first
+such as apache,php,gcc and gd
+
+#yum install httpd php gd gd-devel gcc glibc glibc-common openssl-devel -y
+===========================================================================================================
+Step2: create account to setup a nagios user:
+
+#useradd -m nagios
+#passwd nagios
+111
+111
+
+#groupadd nagioscmd
+#usermod -a -G nagioscmd nagios
+#usermod -a -G nagioscmd apache
+===========================================================================================================
+Step3:
+download nagios core and plugins.create a directory for storing the downloads
+
+#mkdir ~/downloads
+#cd  ~/downloads
+
+now, download the source code tar of both nagios and nagios plugins
+
+#wget https://sourceforge.net/projects/nagios/files/nagios-4.x/nagios-4.5.9/nagios-4.5.9.tar.gz
+#wget https://github.com/nagios-plugins/nagios-plugins/releases/download/release-2.4.12/nagios-plugins-2.4.12.tar.gz
+===========================================================================================================
+Step4:
+Extract downloaded file
+
+#tar -xvzf nagios-4.5.9.tar.gz
+#cd  nagios-4.5.9
+
+now run extracted file script
+#./configure --with-command-group=nagioscmd
+
+for compile nagios source code
+#make all
+
+Install binaries, init script, sample config files and set permission on the external command directory
+#make install
+#make install-init
+#make install-commandmode
+#make install-config
+#make install-exfoliation
+===========================================================================================================
+Step5: Configure web interface
+#make install-webconf
+===========================================================================================================
+Step6: create a nagiosadmin account for login into nagios web interface and set password
+
+#htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+
+set new password 111
+
+#systemctl start httpd
+#systemctl enable httpd
+#systemctl start nagios
+#systemctl enable nagios
+===========================================================================================================
+Step7: Extract plugins and compile install it.
+
+#cd ~/downloads
+#tar -xvzf nagios-plugins-2.4.12.tar.gz
+#cd nagios-plugins-2.4.12/
+
+now compile and install plugins
+#./configure --with-nagios-user=nagios --with-nagios-group=nagioscmd
+#make all
+#make install
+===========================================================================================================
+Step8:verify the nagios configuration file
+#/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg
+
+Now restart service
+
+#systemctl restart nagios
+#systemctl restart httpd
+===========================================================================================================
+Step9:
+open browser and open ip address of nagios system
+eg.
+192.168.1.101/nagios
+
+username: nagiosadmin
+password: 111
+
+
+
+
+
